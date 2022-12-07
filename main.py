@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import math
 from PySide2.QtWidgets import QWidget,\
     QHBoxLayout,\
     QVBoxLayout,\
@@ -41,33 +40,28 @@ class MainWindow(QWidget):
         self.init_UI()
 
     def init_UI(self):
-        h0_labels_for_input_layout = QHBoxLayout()
-        h1_inputs_to_start_layout = QHBoxLayout()
-        h2_img_and_menu_layout = QHBoxLayout()
-        h3_for_error_masages_layout = QHBoxLayout()
-        v_layout = QVBoxLayout()
-        v_layout.addLayout(h0_labels_for_input_layout)
-        v_layout.addLayout(h1_inputs_to_start_layout)
-        v_layout.addLayout(h2_img_and_menu_layout)
-        v_layout.addLayout(h3_for_error_masages_layout)
+        v0_input_start_params_layout = QVBoxLayout()
+        h0_main_layout = QHBoxLayout()
+        h0_main_layout.addLayout(v0_input_start_params_layout)
 
-        h0_labels_for_input_layout.addWidget(self.label_input_Ube0)
-        h0_labels_for_input_layout.addWidget(self.label_input_Ib0)
-        h0_labels_for_input_layout.addWidget(self.label_input_Uke0)
-        h0_labels_for_input_layout.addWidget(self.label_input_Ik0)
-        h0_labels_for_input_layout.addWidget(self.label_input_Ek)
+        v0_input_start_params_layout.addWidget(self.label_input_Ube0)
+        v0_input_start_params_layout.addWidget(self.input_Ube0)
+        v0_input_start_params_layout.addWidget(self.label_input_Ib0)
+        v0_input_start_params_layout.addWidget(self.input_Ib0)
+        v0_input_start_params_layout.addWidget(self.label_input_Uke0)
+        v0_input_start_params_layout.addWidget(self.input_Uke0)
+        v0_input_start_params_layout.addWidget(self.label_input_Ik0)
+        v0_input_start_params_layout.addWidget(self.input_Ik0)
+        v0_input_start_params_layout.addWidget(self.label_input_Ek)
+        v0_input_start_params_layout.addWidget(self.input_Ek)
+        v0_input_start_params_layout.addWidget(self.button_calculate)
+        v0_input_start_params_layout.addWidget(self.label_error)
 
-        h1_inputs_to_start_layout.addWidget(self.input_Ube0)
-        h1_inputs_to_start_layout.addWidget(self.input_Ib0)
-        h1_inputs_to_start_layout.addWidget(self.input_Uke0)
-        h1_inputs_to_start_layout.addWidget(self.input_Ik0)
-        h1_inputs_to_start_layout.addWidget(self.input_Ek)
-        h1_inputs_to_start_layout.addWidget(self.button_calculate)
+        v1_scheme_layout = QVBoxLayout()
+        v1_scheme_layout.addWidget(self.img_of_scheme)
+        h0_main_layout.addLayout(v1_scheme_layout)
 
-        h2_img_and_menu_layout.addWidget(self.img_of_scheme)
-
-        h3_for_error_masages_layout.addWidget(self.label_error)
-        self.setLayout(v_layout)
+        self.setLayout(h0_main_layout)
 
     def culc(self):
         Ube0 = self.input_Ube0.text()
