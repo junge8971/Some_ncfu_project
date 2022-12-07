@@ -2,66 +2,19 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from PySide2.QtWidgets import QWidget,\
-    QHBoxLayout,\
-    QVBoxLayout,\
-    QLineEdit,\
-    QPushButton,\
-    QApplication, \
-    QLabel
+from PySide2 import QtWidgets
+from PySide2.QtWidgets import *
 from PySide2.QtGui import QPixmap
+from main_ui import Ui_MainWindow
 
 
-class MainWindow(QWidget):
+class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Контрольная работа")
+        self.setupUi(self)
+        self.show()
 
-        # Входные параметры для вычисления
-        self.label_input_Ube0 = QLabel('UБЭ0, мВ')
-        self.input_Ube0 = QLineEdit()  # UБЭ0, мВ
-        self.label_input_Ib0 = QLabel('IБ0, мкА')
-        self.input_Ib0 = QLineEdit()  # IБ0, мкА
-        self.label_input_Uke0 = QLabel('UКЭ0, В')
-        self.input_Uke0 = QLineEdit()  # UКЭ0, В
-        self.label_input_Ik0 = QLabel('IК0, мА')
-        self.input_Ik0 = QLineEdit()  # IК0, мА
-        self.label_input_Ek = QLabel('(EK), В')
-        self.input_Ek = QLineEdit()  # Источник питания (EK), В
-        self.button_calculate = QPushButton('Расчитать')
-        self.button_calculate.clicked.connect(self.culc)
-        self.label_error = QLabel()
-
-        # Схема
-        self.img = QPixmap('img/scheme.jpg')
-        self.img_of_scheme = QLabel(self)
-        self.img_of_scheme.setPixmap(self.img)
-
-        self.init_UI()
-
-    def init_UI(self):
-        v0_input_start_params_layout = QVBoxLayout()
-        h0_main_layout = QHBoxLayout()
-        h0_main_layout.addLayout(v0_input_start_params_layout)
-
-        v0_input_start_params_layout.addWidget(self.label_input_Ube0)
-        v0_input_start_params_layout.addWidget(self.input_Ube0)
-        v0_input_start_params_layout.addWidget(self.label_input_Ib0)
-        v0_input_start_params_layout.addWidget(self.input_Ib0)
-        v0_input_start_params_layout.addWidget(self.label_input_Uke0)
-        v0_input_start_params_layout.addWidget(self.input_Uke0)
-        v0_input_start_params_layout.addWidget(self.label_input_Ik0)
-        v0_input_start_params_layout.addWidget(self.input_Ik0)
-        v0_input_start_params_layout.addWidget(self.label_input_Ek)
-        v0_input_start_params_layout.addWidget(self.input_Ek)
-        v0_input_start_params_layout.addWidget(self.button_calculate)
-        v0_input_start_params_layout.addWidget(self.label_error)
-
-        v1_scheme_layout = QVBoxLayout()
-        v1_scheme_layout.addWidget(self.img_of_scheme)
-        h0_main_layout.addLayout(v1_scheme_layout)
-
-        self.setLayout(h0_main_layout)
 
     def culc(self):
         Ube0 = self.input_Ube0.text()
@@ -71,6 +24,27 @@ class MainWindow(QWidget):
         Ek = self.input_Ek.text()
         if Ube0 and Ib0 and Uke0 and Ik0 and Ek:
             Ube0 = self.convert_input_to_num(Ube0)
+            Ib0 = self.convert_input_to_num(Ib0)
+            Uke0 = self.convert_input_to_num(Uke0)
+            Ik0 = self.convert_input_to_num(Ik0)
+            Ek = self.convert_input_to_num(Ek)
+
+            Rke = (Ek - Uke0) / Ik0  # сопротивление цепи эмиттер-коллектор
+            Ikn = Ek / Rke  # постоянный коллекторный ток насыщения транзистора
+            Ie0 = Ik0 + Ib0  # постоянный эмиттерный ток в режиме покоя транзистора
+            URe = 0.01 * Ek  # падение напряжения на сопротивлении эмиттера
+            Re = URe / Ie0  # сопротивление в цепи эмиттера, обеспечивающее отрицательную обратную связь по току
+            Rk = Rke - Re  # сопротивление в коллекторной цепи
+            UR2 = Ube0 + URe  # фиксированное падение напряжение на базе транзистора
+            I1 = 10 * Ib0  # ток в ветви делителя напряжений, протекающий через сопротивление R1
+            I2 = I1-Ib0  # ток в ветви делителя напряжений, протекающий через сопротивление R2
+            R2 = UR2 / I2  # сопротивление резистора R2 делителя напряжения
+            R1 = (Ek - UR2) / I1  # сопротивление резистора R1 делителя напряжения
+            h11 = Ube0 / Ib0  # собственное входное сопротивление транзистора по постоянному току
+            h22 = Uke0 / Ik0  # собственное выходное сопротивление транзистора по постоянному току
+            # емкость разделительных конденсаторов и конденсатора в цепи эмиттера
+            Cr = 1 / (2 * 3.14 * f)
+            Ce = 3 / (2 * 3.14 * f)
 
     def convert_input_to_num(self, input_string: str) -> float:
         params_dict_ru = {'П': [10, -12],
@@ -96,20 +70,16 @@ class MainWindow(QWidget):
 
 
 class HorizontalResistor:
-    def __init__(self, x, y, r_value):
-        self.button_x = int(x)
-        self.button_y = int(y)
-        self.resistance_value = float(r_value)
+    def __init__(self, r_value: float, label_name: str):
+        self.resistance_value = r_value
+        self.label_name = label_name
 
-        self.label_x = self.button_x
-        self.label_y = self.button_y + 3
 
 
 def main():
     if __name__ == "__main__":
         application = QApplication(sys.argv)
         window = MainWindow()
-        window.show()
         sys.exit(application.exec_())
 
 
