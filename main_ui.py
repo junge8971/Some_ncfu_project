@@ -17,7 +17,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1320, 764)
+        MainWindow.resize(1129, 764)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayoutWidget = QWidget(self.centralwidget)
@@ -162,10 +162,12 @@ class Ui_MainWindow(object):
         self.pushButton_Cb.setFlat(True)
         self.label_Rg = QLabel(self.centralwidget)
         self.label_Rg.setObjectName(u"label_Rg")
-        self.label_Rg.setGeometry(QRect(260, 480, 91, 16))
+        self.label_Rg.setGeometry(QRect(250, 480, 91, 16))
+        self.label_Rg.setAlignment(Qt.AlignCenter)
         self.label_Cr1 = QLabel(self.centralwidget)
         self.label_Cr1.setObjectName(u"label_Cr1")
-        self.label_Cr1.setGeometry(QRect(360, 400, 91, 16))
+        self.label_Cr1.setGeometry(QRect(340, 390, 91, 16))
+        self.label_Cr1.setAlignment(Qt.AlignCenter)
         self.label_R2 = QLabel(self.centralwidget)
         self.label_R2.setObjectName(u"label_R2")
         self.label_R2.setGeometry(QRect(490, 550, 111, 16))
@@ -180,115 +182,26 @@ class Ui_MainWindow(object):
         self.label_R5.setGeometry(QRect(1040, 510, 81, 16))
         self.label_Cr2 = QLabel(self.centralwidget)
         self.label_Cr2.setObjectName(u"label_Cr2")
-        self.label_Cr2.setGeometry(QRect(930, 340, 101, 16))
+        self.label_Cr2.setGeometry(QRect(940, 340, 101, 16))
+        self.label_Cr2.setAlignment(Qt.AlignCenter)
         self.label_Rk = QLabel(self.centralwidget)
         self.label_Rk.setObjectName(u"label_Rk")
         self.label_Rk.setGeometry(QRect(800, 330, 71, 16))
         self.label_Cb = QLabel(self.centralwidget)
         self.label_Cb.setObjectName(u"label_Cb")
-        self.label_Cb.setGeometry(QRect(940, 210, 111, 20))
+        self.label_Cb.setGeometry(QRect(930, 210, 111, 20))
         self.label_Cb.setAlignment(Qt.AlignCenter)
         self.label_VEk = QLabel(self.centralwidget)
         self.label_VEk.setObjectName(u"label_VEk")
-        self.label_VEk.setGeometry(QRect(914, 120, 131, 20))
+        self.label_VEk.setGeometry(QRect(900, 110, 131, 20))
         self.label_VEk.setAlignment(Qt.AlignCenter)
-
-        # input_values
-        self.verticalLayoutWidget_2 = QWidget(self.centralwidget)
-        self.verticalLayoutWidget_2.setObjectName(u"verticalLayoutWidget_2")
-        self.verticalLayoutWidget_2.setGeometry(QRect(1130, 10, 181, 181))
-        self.verticalLayout_2 = QVBoxLayout(self.verticalLayoutWidget_2)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.label_for_input_value_object = QLabel(self.verticalLayoutWidget_2)
-        self.label_for_input_value_object.setObjectName(u"label_for_input_value_object")
-        font1 = QFont()
-        font1.setPointSize(10)
-        self.label_for_input_value_object.setFont(font1)
-        self.label_for_input_value_object.setAlignment(Qt.AlignCenter)
-
-        self.verticalLayout_2.addWidget(self.label_for_input_value_object)
-
-        self.input_value_object = QLineEdit(self.verticalLayoutWidget_2)
-        self.input_value_object.setObjectName(u"input_value_object")
-
-        self.verticalLayout_2.addWidget(self.input_value_object)
-
-        self.pushButton_for_input_value_object = QPushButton(self.verticalLayoutWidget_2)
-        self.pushButton_for_input_value_object.setObjectName(u"pushButton_for_input_value_object")
-
-        self.verticalLayout_2.addWidget(self.pushButton_for_input_value_object)
-        # end_input_values
-
-        self.verticalLayoutWidget_3 = QWidget(self.centralwidget)
-        self.verticalLayoutWidget_3.setObjectName(u"verticalLayoutWidget_3")
-        self.verticalLayoutWidget_3.setGeometry(QRect(1130, 200, 181, 351))
-        self.verticalLayout_3 = QVBoxLayout(self.verticalLayoutWidget_3)
-        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
-        self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
-        self.label_generator = QLabel(self.verticalLayoutWidget_3)
-        self.label_generator.setObjectName(u"label_generator")
-        self.label_generator.setFont(font1)
-        self.label_generator.setAlignment(Qt.AlignCenter)
-
-        self.verticalLayout_3.addWidget(self.label_generator)
-
-        self.label_generator_frequency = QLabel(self.verticalLayoutWidget_3)
-        self.label_generator_frequency.setObjectName(u"label_generator_frequency")
-        self.label_generator_frequency.setAlignment(Qt.AlignCenter)
-
-        self.verticalLayout_3.addWidget(self.label_generator_frequency)
-
-        self.input_generator_frequency = QLineEdit(self.verticalLayoutWidget_3)
-        self.input_generator_frequency.setObjectName(u"input_generator_frequency")
-
-        self.verticalLayout_3.addWidget(self.input_generator_frequency)
-
-        self.label_generator_duty_cycle = QLabel(self.verticalLayoutWidget_3)
-        self.label_generator_duty_cycle.setObjectName(u"label_generator_duty_cycle")
-        self.label_generator_duty_cycle.setAlignment(Qt.AlignCenter)
-
-        self.verticalLayout_3.addWidget(self.label_generator_duty_cycle)
-
-        self.input_generator_duty_cycle = QLineEdit(self.verticalLayoutWidget_3)
-        self.input_generator_duty_cycle.setObjectName(u"input_generator_duty_cycle")
-
-        self.verticalLayout_3.addWidget(self.input_generator_duty_cycle)
-
-        self.label_generator_amplitude = QLabel(self.verticalLayoutWidget_3)
-        self.label_generator_amplitude.setObjectName(u"label_generator_amplitude")
-        self.label_generator_amplitude.setAlignment(Qt.AlignCenter)
-
-        self.verticalLayout_3.addWidget(self.label_generator_amplitude)
-
-        self.input_generator_amplitude = QLineEdit(self.verticalLayoutWidget_3)
-        self.input_generator_amplitude.setObjectName(u"input_generator_amplitude")
-
-        self.verticalLayout_3.addWidget(self.input_generator_amplitude)
-
-        self.label_generator_offset = QLabel(self.verticalLayoutWidget_3)
-        self.label_generator_offset.setObjectName(u"label_generator_offset")
-        self.label_generator_offset.setAlignment(Qt.AlignCenter)
-
-        self.verticalLayout_3.addWidget(self.label_generator_offset)
-
-        self.input_generator_offset = QLineEdit(self.verticalLayoutWidget_3)
-        self.input_generator_offset.setObjectName(u"input_generator_offset")
-
-        self.verticalLayout_3.addWidget(self.input_generator_offset)
-
-        self.pushButton_input_generator = QPushButton(self.verticalLayoutWidget_3)
-        self.pushButton_input_generator.setObjectName(u"pushButton_input_generator")
-
-        self.verticalLayout_3.addWidget(self.pushButton_input_generator)
-
         self.label_R1 = QLabel(self.centralwidget)
         self.label_R1.setObjectName(u"label_R1")
         self.label_R1.setGeometry(QRect(500, 320, 101, 20))
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1320, 26))
+        self.menubar.setGeometry(QRect(0, 0, 1129, 26))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
         self.statusbar.setObjectName(u"statusbar")
@@ -298,33 +211,6 @@ class Ui_MainWindow(object):
 
         QMetaObject.connectSlotsByName(MainWindow)
     # setupUi
-    '''
-    def init_input_for(self):
-        self.verticalLayoutWidget_2 = QWidget(self.centralwidget)
-        self.verticalLayoutWidget_2.setObjectName(u"verticalLayoutWidget_2")
-        self.verticalLayoutWidget_2.setGeometry(QRect(1130, 10, 181, 181))
-        self.verticalLayout_2 = QVBoxLayout(self.verticalLayoutWidget_2)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.label_for_input_value_object = QLabel(self.verticalLayoutWidget_2)
-        self.label_for_input_value_object.setObjectName(u"label_for_input_value_object")
-        font1 = QFont()
-        font1.setPointSize(10)
-        self.label_for_input_value_object.setFont(font1)
-        self.label_for_input_value_object.setAlignment(Qt.AlignCenter)
-
-        self.verticalLayout_2.addWidget(self.label_for_input_value_object)
-
-        self.input_value_object = QLineEdit(self.verticalLayoutWidget_2)
-        self.input_value_object.setObjectName(u"input_value_object")
-
-        self.verticalLayout_2.addWidget(self.input_value_object)
-
-        self.pushButton_for_input_value_object = QPushButton(self.verticalLayoutWidget_2)
-        self.pushButton_for_input_value_object.setObjectName(u"pushButton_for_input_value_object")
-
-        self.verticalLayout_2.addWidget(self.pushButton_for_input_value_object)
-    '''
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
@@ -360,14 +246,6 @@ class Ui_MainWindow(object):
         self.label_Rk.setText("")
         self.label_Cb.setText("")
         self.label_VEk.setText("")
-        self.label_for_input_value_object.setText(QCoreApplication.translate("MainWindow", u"\u041d\u0438\u0447\u0435\u0433\u043e \u043d\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043e", None))
-        self.pushButton_for_input_value_object.setText(QCoreApplication.translate("MainWindow", u"\u0412\u043d\u0435\u0441\u0442\u0438", None))
-        self.label_generator.setText(QCoreApplication.translate("MainWindow", u"\u0413\u0435\u043d\u0435\u0440\u0430\u0442\u043e\u0440", None))
-        self.label_generator_frequency.setText(QCoreApplication.translate("MainWindow", u"\u0427\u0430\u0441\u0442\u043e\u0442\u0430", None))
-        self.label_generator_duty_cycle.setText(QCoreApplication.translate("MainWindow", u"\u0420\u0430\u0431\u043e\u0447\u0438\u0439 \u0446\u0438\u043a\u043b", None))
-        self.label_generator_amplitude.setText(QCoreApplication.translate("MainWindow", u"\u0410\u043c\u043f\u043b\u0438\u0442\u0443\u0434\u0430", None))
-        self.label_generator_offset.setText(QCoreApplication.translate("MainWindow", u"\u041a\u043e\u043c\u043f\u0435\u043d\u0441\u0430\u0446\u0438\u044f", None))
-        self.pushButton_input_generator.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
         self.label_R1.setText("")
     # retranslateUi
 

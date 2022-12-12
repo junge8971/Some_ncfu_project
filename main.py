@@ -19,6 +19,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.c4_Rk = Resistor()
         self.c5_Re = Resistor()
         self.c6_R5 = Resistor()
+        self.c7_Ce = Capacitor()
+        self.c8_Cr = Capacitor()
+        self.c9_Cb = Capacitor()
+        self.c10_VEk = Battery()
 
         self.setWindowTitle("Контрольная работа")
         self.setupUi(self)
@@ -31,7 +35,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButton_Re.clicked.connect(self.open_dialog)
         self.pushButton_R5.clicked.connect(self.open_dialog)
         self.pushButton_generator.clicked.connect(self.open_dialog)
-
+        self.pushButton_Cr1.clicked.connect(self.open_dialog)
+        self.pushButton_Cr2.clicked.connect(self.open_dialog)
+        self.pushButton_Ce.clicked.connect(self.open_dialog)
+        self.pushButton_Cb.clicked.connect(self.open_dialog)
+        self.pushButton_VEk.clicked.connect(self.open_dialog)
 
     def open_dialog(self):
         sender = self.sender().objectName()
@@ -51,6 +59,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.c6_R5.exec_()
         elif sender == 'button_calculate':
             self.culc()
+        elif sender == 'pushButton_Ce':
+            self.c7_Ce.exec_()
+        elif sender == 'pushButton_Cr1' or sender == 'pushButton_Cr2':
+            self.c8_Cr.exec_()
+        elif sender == 'pushButton_Cb':
+            self.c9_Cb.exec_()
+        elif sender == 'pushButton_VEk':
+            self.c10_VEk.exec_()
 
     def culc(self):
         Ube0 = self.input_Ube0.text()
@@ -81,17 +97,29 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # емкость разделительных конденсаторов и конденсатора в цепи эмиттера
             f = convert_si_to_num(self.c0_generator.frequency)
             Cr = 1 / (2 * 3.14 * f)
-            print(Cr)
             Ce = 3 / (2 * 3.14 * f)
+            self.update_labels()
+
+    def update_labels(self):
+        self.label_Rg.setText(self.c1_Rg.resistive_value)
+        self.label_R1.setText(self.c2_R1.resistive_value)
+        self.label_R2.setText(self.c3_R2.resistive_value)
+        self.label_Rk.setText(self.c4_Rk.resistive_value)
+        self.label_Re.setText(self.c5_Re.resistive_value)
+        self.label_R5.setText(self.c6_R5.resistive_value)
+        self.label_Ce.setText(self.c7_Ce.capacitance)
+        self.label_Cr1.setText(self.c8_Cr.capacitance)
+        self.label_Cr2.setText(self.c8_Cr.capacitance)
+        self.label_Cb.setText(self.c9_Cb.capacitance)
+        self.label_VEk.setText(self.c10_VEk.voltage)
 
 
 class Resistor(QDialog):
     def __init__(self, parent=None):
         super(Resistor, self).__init__(parent)
         self.resistive_value = '1 K'
-        self.label_name = None
 
-        self.setWindowTitle(f'{self.label_name}')
+        self.setWindowTitle('Резистор')
         self.resistor_v_layout = QVBoxLayout()
         self.resistor_dialog_label = QLabel('Сопротивление')
         self.resistor_dialog_input = QLineEdit(self.resistive_value)
@@ -149,6 +177,52 @@ class Generator(QDialog):
         self.close()
 
 
+class Capacitor(QDialog):
+    def __init__(self, parent=None):
+        super(Capacitor, self).__init__(parent)
+        self.capacitance = '1'
+        self.label_name = "Конденсатор"
+
+        self.setWindowTitle(f'{self.label_name}')
+        self.capacitor_v_layout = QVBoxLayout()
+        self.capacitor_label_capacity = QLabel('Емкость')
+        self.capacitor_input_capacity = QLineEdit(self.capacitance)
+        self.capacitor_push_button = QPushButton('Внести')
+        self.capacitor_v_layout.addWidget(self.capacitor_label_capacity)
+        self.capacitor_v_layout.addWidget(self.capacitor_input_capacity)
+        self.capacitor_v_layout.addWidget(self.capacitor_push_button)
+        self.setLayout(self.capacitor_v_layout)
+
+        self.capacitor_push_button.clicked.connect(self.update_capacitance_values)
+
+    def update_capacitance_values(self):
+        self.capacitance = self.capacitor_input_capacity.text()
+        self.close()
+
+
+class Battery(QDialog):
+    def __init__(self, parent=None):
+        super(Battery, self).__init__(parent)
+        self.voltage = '12'
+        self.label_name = 'Батарейка'
+
+        self.setWindowTitle(f'{self.label_name}')
+        self.battery_v_layout = QVBoxLayout()
+        self.battery_label_voltage = QLabel('Напряжение')
+        self.battery_input_voltage = QLineEdit(self.voltage)
+        self.battery_push_button = QPushButton('Внести')
+        self.battery_v_layout.addWidget(self.battery_label_voltage)
+        self.battery_v_layout.addWidget(self.battery_input_voltage)
+        self.battery_v_layout.addWidget(self.battery_push_button)
+        self.setLayout(self.battery_v_layout)
+
+        self.battery_push_button.clicked.connect(self.update_voltage_values)
+
+    def update_voltage_values(self):
+        self.voltage = self.battery_input_voltage.text()
+        self.close()
+
+
 def convert_si_to_num(input_string: str) -> float:
     params_dict_ru = {'П': -12,
                       'Н': -9,
@@ -200,6 +274,4 @@ def main():
 
 
 if __name__ == '__main__':
-
-
     main()
