@@ -4,7 +4,6 @@
 import sys
 from PySide2 import QtWidgets
 from PySide2.QtWidgets import *
-from PySide2.QtGui import QPixmap
 from main_ui import Ui_MainWindow
 import si_prefix
 
@@ -73,7 +72,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         Ib0 = self.input_Ib0.text()
         Uke0 = self.input_Uke0.text()
         Ik0 = self.input_Ik0.text()
-        Ek = self.input_Ek.text()
+        Ek = self.c10_VEk.voltage
         if Ube0 and Ib0 and Uke0 and Ik0 and Ek:
             Ube0 = convert_si_to_num(Ube0)
             Ib0 = convert_si_to_num(Ib0)
@@ -86,18 +85,25 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             Ie0 = Ik0 + Ib0  # постоянный эмиттерный ток в режиме покоя транзистора
             URe = 0.01 * Ek  # падение напряжения на сопротивлении эмиттера
             Re = URe / Ie0  # сопротивление в цепи эмиттера, обеспечивающее отрицательную обратную связь по току
+            self.c5_Re.update_resistor_values(Re)
             Rk = Rke - Re  # сопротивление в коллекторной цепи
+            self.c4_Rk.update_resistor_values(Rk)
             UR2 = Ube0 + URe  # фиксированное падение напряжение на базе транзистора
             I1 = 10 * Ib0  # ток в ветви делителя напряжений, протекающий через сопротивление R1
             I2 = I1-Ib0  # ток в ветви делителя напряжений, протекающий через сопротивление R2
             R2 = UR2 / I2  # сопротивление резистора R2 делителя напряжения
+            print(R2)
+            self.c3_R2.update_resistor_values(R2)
             R1 = (Ek - UR2) / I1  # сопротивление резистора R1 делителя напряжения
+            self.c2_R1.update_resistor_values(R1)
             h11 = Ube0 / Ib0  # собственное входное сопротивление транзистора по постоянному току
             h22 = Uke0 / Ik0  # собственное выходное сопротивление транзистора по постоянному току
             # емкость разделительных конденсаторов и конденсатора в цепи эмиттера
             f = convert_si_to_num(self.c0_generator.frequency)
             Cr = 1 / (2 * 3.14 * f)
+            self.c8_Cr.update_capacitance_values(Cr)
             Ce = 3 / (2 * 3.14 * f)
+            self.c7_Ce.update_capacitance_values(Ce)
             self.update_labels()
 
     def update_labels(self):
@@ -131,9 +137,12 @@ class Resistor(QDialog):
 
         self.resistor_dialog_pushbutton.clicked.connect(self.update_resistor_values)
 
-    def update_resistor_values(self):
-        self.resistive_value = self.resistor_dialog_input.text()
-        self.close()
+    def update_resistor_values(self, raw_value: float = None):
+        if raw_value is not None:
+            self.resistive_value = set_proper_value(raw_value)
+        else:
+            self.resistive_value = self.resistor_dialog_input.text()
+            self.close()
 
 
 class Generator(QDialog):
@@ -195,9 +204,12 @@ class Capacitor(QDialog):
 
         self.capacitor_push_button.clicked.connect(self.update_capacitance_values)
 
-    def update_capacitance_values(self):
-        self.capacitance = self.capacitor_input_capacity.text()
-        self.close()
+    def update_capacitance_values(self, raw_value: float = None):
+        if raw_value is not None:
+            self.capacitance = set_proper_value(raw_value)
+        else:
+            self.capacitance = self.capacitor_input_capacity.text()
+            self.close()
 
 
 class Battery(QDialog):
@@ -264,7 +276,52 @@ def convert_num_to_si(input_num: float) -> str:
     num_and_extent = si_prefix.split(input_num)
     for key, value in params_dict_ru.items():
         if value == num_and_extent[1]:
-            return f'{num_and_extent[0]} {key}'
+            return f'{round(num_and_extent[0], 1)} {key}'
+
+
+def convert_si_to_proper_from(string_to_convert: str) -> str:
+    e24 = (1.0, 1.1, 1.2,
+           1.3, 1.5, 1.6,
+           1.8, 2.0, 2.2,
+           2.4, 2.7, 3.0,
+           3.3, 3.6, 3.9,
+           4.3, 4.7, 5.1,
+           5.6, 6.2, 6.8,
+           7.5, 8.1, 9.1)
+    num, postfix = string_to_convert.split(' ')
+    num = round(float(num), 1)
+    if num < 10:
+        if num not in e24:
+            for item in e24:
+                if item > num:
+                    num = item
+                    return f'{num} {postfix}'
+        else:
+            return f'{num} {postfix}'
+    elif 10 <= num < 100:
+        num_for_check = round(num / 10, 1)
+        if num_for_check not in e24:
+            for item in e24:
+                if item > num_for_check:
+                    num = item
+                    return f'{round(num * 10, 1)} {postfix}'
+        else:
+            return f'{num} {postfix}'
+    elif num >= 100:
+        num_for_check = round(num / 100, 1)
+        if num_for_check not in e24:
+            for item in e24:
+                if item > num_for_check:
+                    num = item
+                    return f'{round(num * 100, 1)} {postfix}'
+        else:
+            return f'{num} {postfix}'
+
+
+def set_proper_value(value_to_correct: float) -> str:
+    value_in_si_form = convert_num_to_si(value_to_correct)
+    result = convert_si_to_proper_from(value_in_si_form)
+    return result
 
 
 def main():
