@@ -67,6 +67,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         elif sender == 'pushButton_VEk':
             self.c10_VEk.exec_()
 
+        self.update_labels()
+
     def culc(self):
         Ube0 = self.input_Ube0.text()
         Ib0 = self.input_Ib0.text()
@@ -92,7 +94,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             I1 = 10 * Ib0  # ток в ветви делителя напряжений, протекающий через сопротивление R1
             I2 = I1-Ib0  # ток в ветви делителя напряжений, протекающий через сопротивление R2
             R2 = UR2 / I2  # сопротивление резистора R2 делителя напряжения
-            print(R2)
             self.c3_R2.update_resistor_values(R2)
             R1 = (Ek - UR2) / I1  # сопротивление резистора R1 делителя напряжения
             self.c2_R1.update_resistor_values(R1)
@@ -107,17 +108,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.update_labels()
 
     def update_labels(self):
-        self.label_Rg.setText(self.c1_Rg.resistive_value)
-        self.label_R1.setText(self.c2_R1.resistive_value)
-        self.label_R2.setText(self.c3_R2.resistive_value)
-        self.label_Rk.setText(self.c4_Rk.resistive_value)
-        self.label_Re.setText(self.c5_Re.resistive_value)
-        self.label_R5.setText(self.c6_R5.resistive_value)
-        self.label_Ce.setText(self.c7_Ce.capacitance)
-        self.label_Cr1.setText(self.c8_Cr.capacitance)
-        self.label_Cr2.setText(self.c8_Cr.capacitance)
-        self.label_Cb.setText(self.c9_Cb.capacitance)
-        self.label_VEk.setText(self.c10_VEk.voltage)
+        self.label_Rg.setText(self.c1_Rg.get_resistor_label())
+        self.label_R1.setText(self.c2_R1.get_resistor_label())
+        self.label_R2.setText(self.c3_R2.get_resistor_label())
+        self.label_Rk.setText(self.c4_Rk.get_resistor_label())
+        self.label_Re.setText(self.c5_Re.get_resistor_label())
+        self.label_R5.setText(self.c6_R5.get_resistor_label())
+        self.label_Ce.setText(self.c7_Ce.get_capacitance_label())
+        self.label_Cr1.setText(self.c8_Cr.get_capacitance_label())
+        self.label_Cr2.setText(self.c8_Cr.get_capacitance_label())
+        self.label_Cb.setText(self.c9_Cb.get_capacitance_label())
+        self.label_VEk.setText(self.c10_VEk.get_battery_label())
 
 
 class Resistor(QDialog):
@@ -137,12 +138,15 @@ class Resistor(QDialog):
 
         self.resistor_dialog_pushbutton.clicked.connect(self.update_resistor_values)
 
-    def update_resistor_values(self, raw_value: float = None):
-        if raw_value is not None:
+    def update_resistor_values(self, raw_value: float):
+        if raw_value is not False:
             self.resistive_value = set_proper_value(raw_value)
         else:
             self.resistive_value = self.resistor_dialog_input.text()
             self.close()
+
+    def get_resistor_label(self):
+        return f'{self.resistive_value}Ом'
 
 
 class Generator(QDialog):
@@ -204,12 +208,15 @@ class Capacitor(QDialog):
 
         self.capacitor_push_button.clicked.connect(self.update_capacitance_values)
 
-    def update_capacitance_values(self, raw_value: float = None):
-        if raw_value is not None:
+    def update_capacitance_values(self, raw_value: float):
+        if raw_value is not False:
             self.capacitance = set_proper_value(raw_value)
         else:
             self.capacitance = self.capacitor_input_capacity.text()
             self.close()
+
+    def get_capacitance_label(self):
+        return f'{self.capacitance}Ф'
 
 
 class Battery(QDialog):
@@ -233,6 +240,9 @@ class Battery(QDialog):
     def update_voltage_values(self):
         self.voltage = self.battery_input_voltage.text()
         self.close()
+
+    def get_battery_label(self):
+        return f'{self.voltage}В'
 
 
 def convert_si_to_num(input_string: str) -> float:
@@ -271,15 +281,31 @@ def convert_num_to_si(input_num: float) -> str:
                       'К': 3,
                       'М': 6,
                       'Г': 9,
-                      'Т': 12
+                      'Т': 12,
+                      '': 0
                       }
     num_and_extent = si_prefix.split(input_num)
     for key, value in params_dict_ru.items():
         if value == num_and_extent[1]:
-            return f'{round(num_and_extent[0], 1)} {key}'
+            result = f'{round(num_and_extent[0], 1)} {key}'
+            print(f'{result=} {type(result)=}')
+            return result
 
 
 def convert_si_to_proper_from(string_to_convert: str) -> str:
+    try:
+        num, postfix = string_to_convert.split(' ')
+        num = round(float(num), 1)
+        return check(num, postfix)
+
+    except AttributeError:
+        num = string_to_convert
+        num = round(float(num), 1)
+        postfix = ''
+        return check(num, postfix)
+
+
+def check(num, postfix):
     e24 = (1.0, 1.1, 1.2,
            1.3, 1.5, 1.6,
            1.8, 2.0, 2.2,
@@ -288,8 +314,6 @@ def convert_si_to_proper_from(string_to_convert: str) -> str:
            4.3, 4.7, 5.1,
            5.6, 6.2, 6.8,
            7.5, 8.1, 9.1)
-    num, postfix = string_to_convert.split(' ')
-    num = round(float(num), 1)
     if num < 10:
         if num not in e24:
             for item in e24:
