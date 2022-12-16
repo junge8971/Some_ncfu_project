@@ -40,6 +40,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButton_Cb.clicked.connect(self.open_dialog)
         self.pushButton_VEk.clicked.connect(self.open_dialog)
 
+        self.update_labels()
+
     def open_dialog(self):
         sender = self.sender().objectName()
         if sender == 'pushButton_generator':
@@ -68,6 +70,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.c10_VEk.exec_()
 
         self.update_labels()
+        self.culc()
 
     def culc(self):
         Ube0 = self.input_Ube0.text()
@@ -124,7 +127,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 class Resistor(QDialog):
     def __init__(self, parent=None):
         super(Resistor, self).__init__(parent)
-        self.resistive_value = '1 K'
+        self.resistive_value = '1 k'
 
         self.setWindowTitle('Резистор')
         self.resistor_v_layout = QVBoxLayout()
@@ -246,18 +249,19 @@ class Battery(QDialog):
 
 
 def convert_si_to_num(input_string: str) -> float:
-    params_dict_ru = {'П': -12,
-                      'Н': -9,
-                      'мк': -6,
-                      'м': -3,
-                      'C': -2,
-                      'Д': -1,
-                      'да': 1,
-                      'г': 2,
-                      'К': 3,
-                      'М': 6,
-                      'Г': 9,
-                      'Т': 12
+    params_dict_ru = {'p': -12,
+                      'n': -9,
+                      'u': -6,
+                      'm': -3,
+                      's': -2,
+                      'd': -1,
+                      'da': 1,
+                      'h': 2,
+                      'k': 3,
+                      'M': 6,
+                      'G': 9,
+                      'T': 12,
+                      '': 0
                       }
     try:
         num, postfix = input_string.split(' ')
@@ -270,25 +274,24 @@ def convert_si_to_num(input_string: str) -> float:
 
 
 def convert_num_to_si(input_num: float) -> str:
-    params_dict_ru = {'П': -12,
-                      'Н': -9,
-                      'мк': -6,
-                      'м': -3,
-                      'C': -2,
-                      'Д': -1,
-                      'да': 1,
-                      'г': 2,
-                      'К': 3,
-                      'М': 6,
-                      'Г': 9,
-                      'Т': 12,
+    params_dict_ru = {'p': -12,
+                      'n': -9,
+                      'u': -6,
+                      'm': -3,
+                      's': -2,
+                      'd': -1,
+                      'da': 1,
+                      'h': 2,
+                      'k': 3,
+                      'M': 6,
+                      'G': 9,
+                      'T': 12,
                       '': 0
                       }
     num_and_extent = si_prefix.split(input_num)
     for key, value in params_dict_ru.items():
         if value == num_and_extent[1]:
             result = f'{round(num_and_extent[0], 1)} {key}'
-            print(f'{result=} {type(result)=}')
             return result
 
 
@@ -321,7 +324,7 @@ def check(num, postfix):
                     num = item
                     return f'{num} {postfix}'
         else:
-            return f'{num} {postfix}'
+            return f'{round(num, 1)} {postfix}'
     elif 10 <= num < 100:
         num_for_check = round(num / 10, 1)
         if num_for_check not in e24:
@@ -330,7 +333,7 @@ def check(num, postfix):
                     num = item
                     return f'{round(num * 10, 1)} {postfix}'
         else:
-            return f'{num} {postfix}'
+            return f'{round(num_for_check * 10)} {postfix}'
     elif num >= 100:
         num_for_check = round(num / 100, 1)
         if num_for_check not in e24:
@@ -339,7 +342,7 @@ def check(num, postfix):
                     num = item
                     return f'{round(num * 100, 1)} {postfix}'
         else:
-            return f'{num} {postfix}'
+            return f'{round(num_for_check * 100, 1)} {postfix}'
 
 
 def set_proper_value(value_to_correct: float) -> str:
