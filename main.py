@@ -6,6 +6,8 @@ from PySide2 import QtWidgets
 from PySide2.QtWidgets import *
 from main_ui import Ui_MainWindow
 import si_prefix
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -22,6 +24,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.c8_Cr = Capacitor()
         self.c9_Cb = Capacitor()
         self.c10_VEk = Battery()
+        self.c11_Osci = Oscilloscope()
 
         self.setWindowTitle("Контрольная работа")
         self.setupUi(self)
@@ -39,6 +42,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.pushButton_Ce.clicked.connect(self.open_dialog)
         self.pushButton_Cb.clicked.connect(self.open_dialog)
         self.pushButton_VEk.clicked.connect(self.open_dialog)
+        self.pushButton_oscilloscope.clicked.connect(self.open_dialog)
 
         self.update_labels()
 
@@ -68,6 +72,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.c9_Cb.exec_()
         elif sender == 'pushButton_VEk':
             self.c10_VEk.exec_()
+        elif sender == 'pushButton_oscilloscope':
+            self.c11_Osci.run()
 
         self.update_labels()
         self.culc()
@@ -246,6 +252,23 @@ class Battery(QDialog):
 
     def get_battery_label(self):
         return f'{self.voltage}В'
+
+
+class Oscilloscope:
+    def __init__(self):
+        self.fig, self.ax = plt.subplots()
+
+    def run(self):
+        x = np.linspace(0, 500, 100)
+        y = np.sin(2 * np.pi * 100 * x) + 1
+        y2 = np.sin(2 * np.pi * 100 * x + np.pi) - 1
+        self.ax.plot(x, y)
+        self.ax.plot(x, y2)
+        plt.xlabel('Время, t')
+        plt.ylabel('Напряжение, U')
+        plt.title('Осцилограф')
+        plt.grid(True)
+        plt.show()
 
 
 def convert_si_to_num(input_string: str) -> float:
