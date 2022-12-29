@@ -7,10 +7,12 @@ from PySide2.QtWidgets import *
 from main_ui import Ui_MainWindow
 import si_prefix
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+from matplotlib.figure import Figure
 import numpy as np
 
 
-class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
+class Main_Window(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.c0_generator = Generator()
@@ -24,7 +26,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.c8_Cr = Capacitor()
         self.c9_Cb = Capacitor()
         self.c10_VEk = Battery()
-        self.c11_Osci = Oscilloscope()
 
         self.setWindowTitle("Контрольная работа")
         self.setupUi(self)
@@ -73,48 +74,83 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         elif sender == 'pushButton_VEk':
             self.c10_VEk.exec_()
         elif sender == 'pushButton_oscilloscope':
-            self.c11_Osci.run()
+            osci = Oscilloscope()
+            osci.set_params(self.culc())
+            osci.exec_()
 
         self.update_labels()
         self.culc()
 
     def culc(self):
-        Ube0 = self.input_Ube0.text()
-        Ib0 = self.input_Ib0.text()
-        Uke0 = self.input_Uke0.text()
-        Ik0 = self.input_Ik0.text()
-        Ek = self.c10_VEk.voltage
-        if Ube0 and Ib0 and Uke0 and Ik0 and Ek:
+        Ube0 = self.input_Ube0.text().replace(',', '.')
+        Ib0 = self.input_Ib0.text().replace(',', '.')
+        Uke0 = self.input_Uke0.text().replace(',', '.')
+        Ik0 = self.input_Ik0.text().replace(',', '.')
+        Ek = self.c10_VEk.voltage.replace(',', '.')
+        H11 = self.input_H11.text().replace(',', '.')
+        B = self.input_B.text().replace(',', '.')
+        if Ube0 and Ib0 and Uke0 and Ik0 and Ek and H11 and B:
             Ube0 = convert_si_to_num(Ube0)
             Ib0 = convert_si_to_num(Ib0)
             Uke0 = convert_si_to_num(Uke0)
             Ik0 = convert_si_to_num(Ik0)
             Ek = convert_si_to_num(Ek)
+            H11 = convert_si_to_num(H11)
+            B = convert_si_to_num(B)
 
-            Rke = (Ek - Uke0) / Ik0  # сопротивление цепи эмиттер-коллектор
-            Ikn = Ek / Rke  # постоянный коллекторный ток насыщения транзистора
-            Ie0 = Ik0 + Ib0  # постоянный эмиттерный ток в режиме покоя транзистора
-            URe = 0.01 * Ek  # падение напряжения на сопротивлении эмиттера
-            Re = URe / Ie0  # сопротивление в цепи эмиттера, обеспечивающее отрицательную обратную связь по току
+            Rke: float = (Ek - Uke0) / Ik0  # сопротивление цепи эмиттер-коллектор
+            Ikn: float = Ek / Rke  # постоянный коллекторный ток насыщения транзистора
+            Ie0: float = Ik0 + Ib0  # постоянный эмиттерный ток в режиме покоя транзистора
+            URe: float = 0.01 * Ek  # падение напряжения на сопротивлении эмиттера
+            Re: float = URe / Ie0  # сопротивление в цепи эмиттера, обеспечивающее отрицательную обратную связь по току
             self.c5_Re.update_resistor_values(Re)
-            Rk = Rke - Re  # сопротивление в коллекторной цепи
+            Rk: float = Rke - Re  # сопротивление в коллекторной цепи
             self.c4_Rk.update_resistor_values(Rk)
-            UR2 = Ube0 + URe  # фиксированное падение напряжение на базе транзистора
-            I1 = 10 * Ib0  # ток в ветви делителя напряжений, протекающий через сопротивление R1
-            I2 = I1-Ib0  # ток в ветви делителя напряжений, протекающий через сопротивление R2
-            R2 = UR2 / I2  # сопротивление резистора R2 делителя напряжения
+            UR2: float = Ube0 + URe  # фиксированное падение напряжение на базе транзистора
+            I1: float = 10 * Ib0  # ток в ветви делителя напряжений, протекающий через сопротивление R1
+            I2: float = I1-Ib0  # ток в ветви делителя напряжений, протекающий через сопротивление R2
+            R2: float = UR2 / I2  # сопротивление резистора R2 делителя напряжения
             self.c3_R2.update_resistor_values(R2)
-            R1 = (Ek - UR2) / I1  # сопротивление резистора R1 делителя напряжения
+            R1: float = (Ek - UR2) / I1  # сопротивление резистора R1 делителя напряжения
             self.c2_R1.update_resistor_values(R1)
-            h11 = Ube0 / Ib0  # собственное входное сопротивление транзистора по постоянному току
-            h22 = Uke0 / Ik0  # собственное выходное сопротивление транзистора по постоянному току
+            h11: float = Ube0 / Ib0  # собственное входное сопротивление транзистора по постоянному току
+            h22: float = Uke0 / Ik0  # собственное выходное сопротивление транзистора по постоянному току
             # емкость разделительных конденсаторов и конденсатора в цепи эмиттера
-            f = convert_si_to_num(self.c0_generator.frequency)
-            Cr = 1 / (2 * 3.14 * f)
+            f: float = convert_si_to_num(self.c0_generator.frequency)
+            Cr: float = 1 / (2 * 3.14 * f)
             self.c8_Cr.update_capacitance_values(Cr)
-            Ce = 3 / (2 * 3.14 * f)
+            Ce: float = 3 / (2 * 3.14 * f)
             self.c7_Ce.update_capacitance_values(Ce)
+            Rb: float = (R1 * R2) / (R1 + R2)
+            Rvx: float = (Rb * H11) / (Rb + H11)
+            E: float = convert_si_to_num(self.c10_VEk.voltage)
+            Rg: float = convert_si_to_num(self.c1_Rg.resistive_value)
+            Ivx: float = E / (Rg + Rvx)
+            Uvx: float = Ivx * Rvx
+            Ib: float = Uvx / H11
+            Ik: float = Ib * B
+            Rn: float = convert_si_to_num(self.c5_Re.resistive_value)
+            Rvux: float = (Rk * Rn) / (Rk + Rn)
+            Uke: float = Ik * Rvux
+            Ivux: float = Uke / Rk
+            In: float = Uke / Rn
+
+            Un: float = Ik * Rvux # Выходное напрядение после усиления
+            Ku: float = Un / Uvx  #
+            Ke: float = Un / E  # Eg - в генераторе напряжение
+            Ki: float = In / Ivx
+            Kp: float = Ki * Ku
+
             self.update_labels()
+
+            return {'Un': Un,
+                    'Ku': Ku,
+                    'Ke': Ke,
+                    'Ki': Ki,
+                    'Kp': Kp,
+                    'generator_a': convert_si_to_num(self.c0_generator.amplitude),
+                    'generator_f': convert_si_to_num(self.c0_generator.frequency),
+                    }
 
     def update_labels(self):
         self.label_Rg.setText(self.c1_Rg.get_resistor_label())
@@ -154,7 +190,7 @@ class Resistor(QDialog):
             self.resistive_value = self.resistor_dialog_input.text()
             self.close()
 
-    def get_resistor_label(self):
+    def get_resistor_label(self) -> str:
         return f'{self.resistive_value}Ом'
 
 
@@ -254,21 +290,106 @@ class Battery(QDialog):
         return f'{self.voltage}В'
 
 
-class Oscilloscope:
-    def __init__(self):
-        self.fig, self.ax = plt.subplots()
+class Oscilloscope(QDialog):
+    def __init__(self, parent=None):
+        super(Oscilloscope, self).__init__(parent)
+        self.setWindowTitle('Осцилограф')
+        self.setMinimumSize(300, 300)
 
-    def run(self):
-        x = np.linspace(0, 500, 100)
-        y = np.sin(2 * np.pi * 100 * x) + 1
-        y2 = np.sin(2 * np.pi * 100 * x + np.pi) - 1
-        self.ax.plot(x, y)
-        self.ax.plot(x, y2)
+        self.params = None
+
+        self.label_time_base = QLabel('Time base')
+        self.combo_time_base = QComboBox()
+        self.spin_time_base = QDoubleSpinBox()
+
+        self.label_channel_a = QLabel('Channel A')
+        self.combo_channel_a = QComboBox()
+        self.spin_channel_a = QDoubleSpinBox()
+
+        self.label_channel_b = QLabel('Channel B')
+        self.combo_channel_b = QComboBox()
+        self.spin_channel_b = QDoubleSpinBox()
+
+        self.button = QPushButton("Построить")
+        self.button.clicked.connect(self.plot)
+
+        self.layout_osci = QVBoxLayout()
+
+        self.init_DUI()
+
+    def init_DUI(self):
+        self.layout_osci.addWidget(self.label_time_base)
+        self.layout_osci.addWidget(self.combo_time_base)
+        self.layout_osci.addWidget(self.spin_time_base)
+        self.layout_osci.addWidget(self.label_channel_a)
+        self.layout_osci.addWidget(self.combo_channel_a)
+        self.layout_osci.addWidget(self.spin_channel_a)
+        self.layout_osci.addWidget(self.label_channel_b)
+        self.layout_osci.addWidget(self.combo_channel_b)
+        self.layout_osci.addWidget(self.spin_channel_b)
+        self.layout_osci.addWidget(self.button)
+        self.setLayout(self.layout_osci)
+
+        self.spin_time_base.setRange(-5, 5)
+        self.spin_time_base.setSingleStep(0.1)
+        self.spin_time_base.setSuffix(' - y position')
+        self.spin_time_base.valueChanged.connect(self.plot)
+
+        self.spin_channel_a.setRange(-5, 5)
+        self.spin_channel_a.setSingleStep(0.2)
+        self.spin_channel_a.setSuffix(' - y position')
+        self.spin_channel_a.valueChanged.connect(self.plot)
+
+        self.spin_channel_b.setRange(-5, 5)
+        self.spin_channel_b.setSingleStep(0.2)
+        self.spin_channel_b.setSuffix(' - y position')
+        self.spin_channel_b.valueChanged.connect(self.plot)
+
+        self.combo_time_base.addItems(list_for_combobox('time_base'))
+        self.combo_time_base.currentTextChanged.connect(self.plot)
+
+        self.combo_channel_a.addItems(list_for_combobox('chanal'))
+        self.combo_channel_a.currentTextChanged.connect(self.plot)
+
+        self.combo_channel_b.addItems(list_for_combobox('chanal'))
+        self.combo_channel_b.currentTextChanged.connect(self.plot)
+
+    def set_params(self, params):
+        self.params = params
+
+    def plot(self):
+        print(self.params)
+        x = np.linspace(0, end_generation_point, num_of_generation_points)
+        y = generator_amplitude + np.sin(2 * np.pi * f * x) + offset_by_y_in_osci
+        y2 = Umax + np.sin(2 * np.pi * f * x) + offset_by_y2_in_osci
+        fig, ax = plt.subplots()
+        ax.plot(x, y)
+        ax.plot(x, y2)
         plt.xlabel('Время, t')
         plt.ylabel('Напряжение, U')
         plt.title('Осцилограф')
         plt.grid(True)
         plt.show()
+
+
+def list_for_combobox(type_of_list: str) -> list:
+    if type_of_list == 'chanal':
+        type_of_number = ('500', '200', '100', '50', '20', '10', '5', '2', '1')
+        type_of_suffix = (' kV/div', 'V/div', ' mV/div', ' uV/div')
+        result = []
+        for item in type_of_suffix:
+            for number in type_of_number:
+                result.append(number + item)
+        return result
+    elif type_of_list == 'time_base':
+        type_of_number = ('5.00', '2.00', '1.00', '0.5', '0.2', '0.1', '0.05', '0.02', '0.01')
+        type_of_suffix = (' s/div', ' ms/div', ' us/div', ' ns/div',)
+        result = []
+        for item in type_of_suffix:
+            for number in type_of_number:
+                result.append(number + item)
+        return result
+
 
 
 def convert_si_to_num(input_string: str) -> float:
@@ -292,6 +413,8 @@ def convert_si_to_num(input_string: str) -> float:
             params_postfix = params_dict_ru.get(postfix)
             result = float(num) * pow(10, params_postfix)
             return result
+        else:
+            return float(num)
     except ValueError:
         return float(input_string)
 
@@ -322,16 +445,16 @@ def convert_si_to_proper_from(string_to_convert: str) -> str:
     try:
         num, postfix = string_to_convert.split(' ')
         num = round(float(num), 1)
-        return check(num, postfix)
+        return _check(num, postfix)
 
     except AttributeError:
         num = string_to_convert
         num = round(float(num), 1)
         postfix = ''
-        return check(num, postfix)
+        return _check(num, postfix)
 
 
-def check(num, postfix):
+def _check(num, postfix):
     e24 = (1.0, 1.1, 1.2,
            1.3, 1.5, 1.6,
            1.8, 2.0, 2.2,
@@ -376,7 +499,7 @@ def set_proper_value(value_to_correct: float) -> str:
 
 def main():
     application = QApplication(sys.argv)
-    window = MainWindow()
+    window = Main_Window()
     sys.exit(application.exec_())
 
 

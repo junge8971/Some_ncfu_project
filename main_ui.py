@@ -16,7 +16,7 @@ from PySide2.QtWidgets import *
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
-            MainWindow.setObjectName(u"MainWindow")
+            MainWindow.setObjectName(u"Main_Window")
         MainWindow.resize(1129, 764)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
@@ -75,6 +75,30 @@ class Ui_MainWindow(object):
         self.input_Ik0.setObjectName(u"input_Ik0")
 
         self.verticalLayout.addWidget(self.input_Ik0)
+
+        self.label_input_B = QLabel(self.verticalLayoutWidget)
+        self.label_input_B.setObjectName(u"label_input_B")
+        self.label_input_B.setFont(font)
+        self.label_input_B.setAlignment(Qt.AlignCenter)
+
+        self.verticalLayout.addWidget(self.label_input_B)
+
+        self.input_B = QLineEdit(self.verticalLayoutWidget)
+        self.input_B.setObjectName(u"input_B")
+
+        self.verticalLayout.addWidget(self.input_B)
+
+        self.label_input_H11 = QLabel(self.verticalLayoutWidget)
+        self.label_input_H11.setObjectName(u"label_input_H11")
+        self.label_input_H11.setFont(font)
+        self.label_input_H11.setAlignment(Qt.AlignCenter)
+
+        self.verticalLayout.addWidget(self.label_input_H11)
+
+        self.input_H11 = QLineEdit(self.verticalLayoutWidget)
+        self.input_H11.setObjectName(u"input_H11")
+
+        self.verticalLayout.addWidget(self.input_H11)
 
         self.button_calculate = QPushButton(self.verticalLayoutWidget)
         self.button_calculate.setObjectName(u"button_calculate")
@@ -201,12 +225,14 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
-        self.label_input_Ube0.setText(QCoreApplication.translate("MainWindow", u"U\u0411\u042d0, \u0412", None))
-        self.label_input_Ib0.setText(QCoreApplication.translate("MainWindow", u"I\u04110, \u0410", None))
-        self.label_input_Uke0.setText(QCoreApplication.translate("MainWindow", u"U\u041a\u042d0, \u0412", None))
-        self.label_input_Ik0.setText(QCoreApplication.translate("MainWindow", u"I\u041a0, \u0410", None))
-        self.button_calculate.setText(QCoreApplication.translate("MainWindow", u"\u0420\u0430\u0441\u0447\u0438\u0442\u0430\u0442\u044c", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("Main_Window", u"Main_Window", None))
+        self.label_input_Ube0.setText(QCoreApplication.translate("Main_Window", u"U\u0411\u042d0, \u0412", None))
+        self.label_input_Ib0.setText(QCoreApplication.translate("Main_Window", u"I\u04110, \u0410", None))
+        self.label_input_Uke0.setText(QCoreApplication.translate("Main_Window", u"U\u041a\u042d0, \u0412", None))
+        self.label_input_Ik0.setText(QCoreApplication.translate("Main_Window", u"I\u041a0, \u0410", None))
+        self.label_input_B.setText(QCoreApplication.translate("Main_Window", u"\u03b2", None))
+        self.label_input_H11.setText(QCoreApplication.translate("Main_Window", u"h11, \u043f\u0435\u0440\u0435\u043c", None))
+        self.button_calculate.setText(QCoreApplication.translate("Main_Window", u"\u0420\u0430\u0441\u0447\u0438\u0442\u0430\u0442\u044c", None))
         self.label_error.setText("")
         self.img_of_scheme.setText("")
         self.pushButton_R1.setText("")
