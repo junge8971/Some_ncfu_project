@@ -350,21 +350,30 @@ class Oscilloscope(QDialog):
 
         self.combo_channel_a.addItems(list_for_combobox('chanal'))
         self.combo_channel_a.currentTextChanged.connect(self.plot)
+        self.combo_channel_a.setCurrentText('1 V/div')
 
         self.combo_channel_b.addItems(list_for_combobox('chanal'))
         self.combo_channel_b.currentTextChanged.connect(self.plot)
+        self.combo_channel_b.setCurrentText('1 V/div')
 
     def set_params(self, params):
         self.params = params
 
     def plot(self):
-        print(self.params)
-        x = np.linspace(0, end_generation_point, num_of_generation_points)
-        y = generator_amplitude + np.sin(2 * np.pi * f * x) + offset_by_y_in_osci
-        y2 = Umax + np.sin(2 * np.pi * f * x) + offset_by_y2_in_osci
+        plt.close()
+        osci_multiplaer_a = convert_si_to_num(self.combo_channel_a.currentText())
+        osci_multiplaer_b = convert_si_to_num(self.combo_channel_b.currentText())
+        offset_by_y_in_osci = self.spin_channel_a.value()
+        offset_by_y2_in_osci = self.spin_channel_b.value()
+        x = np.linspace(0, 1000, 100)
+        y = (self.params.get('generator_a') * np.sin(2 * np.pi * self.params.get('generator_f') * x)) \
+            * osci_multiplaer_a + offset_by_y_in_osci
+        y2 = (self.params.get('Un') * np.sin(2 * np.pi * self.params.get('generator_f') * x)) \
+            * osci_multiplaer_b + offset_by_y2_in_osci
         fig, ax = plt.subplots()
-        ax.plot(x, y)
-        ax.plot(x, y2)
+        ax.plot(x, y, label='Генератор')
+        ax.plot(x, y2, label='Услининый сигнал')
+        ax.legend()
         plt.xlabel('Время, t')
         plt.ylabel('Напряжение, U')
         plt.title('Осцилограф')
@@ -375,7 +384,7 @@ class Oscilloscope(QDialog):
 def list_for_combobox(type_of_list: str) -> list:
     if type_of_list == 'chanal':
         type_of_number = ('500', '200', '100', '50', '20', '10', '5', '2', '1')
-        type_of_suffix = (' kV/div', 'V/div', ' mV/div', ' uV/div')
+        type_of_suffix = (' kV/div', ' V/div', ' mV/div', ' uV/div')
         result = []
         for item in type_of_suffix:
             for number in type_of_number:
@@ -389,7 +398,6 @@ def list_for_combobox(type_of_list: str) -> list:
             for number in type_of_number:
                 result.append(number + item)
         return result
-
 
 
 def convert_si_to_num(input_string: str) -> float:
@@ -413,6 +421,14 @@ def convert_si_to_num(input_string: str) -> float:
             params_postfix = params_dict_ru.get(postfix)
             result = float(num) * pow(10, params_postfix)
             return result
+        elif 's/div' in postfix or 'V/div' in postfix:
+            postfix = postfix[:-5]
+            if postfix in params_dict_ru:
+                params_postfix = params_dict_ru.get(postfix)
+                result = float(num) * pow(10, params_postfix)
+                return result
+            else:
+                return float(num)
         else:
             return float(num)
     except ValueError:
