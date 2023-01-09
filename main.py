@@ -7,12 +7,10 @@ from PySide2.QtWidgets import *
 from main_ui import Ui_MainWindow
 import si_prefix
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
-from matplotlib.figure import Figure
 import numpy as np
 
 
-class Main_Window(QtWidgets.QMainWindow, Ui_MainWindow):
+class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.c0_generator = Generator()
@@ -136,10 +134,13 @@ class Main_Window(QtWidgets.QMainWindow, Ui_MainWindow):
             In: float = Uke / Rn
 
             Un: float = Ik * Rvux # Выходное напрядение после усиления
+
             Ku: float = Un / Uvx  #
             Ke: float = Un / E  # Eg - в генераторе напряжение
             Ki: float = In / Ivx
             Kp: float = Ki * Ku
+            self.label_k_output.setText(f'Ku = {convert_num_to_si(Ku)}\nKe = {convert_num_to_si(Ke)}\n'
+                                        f'Ki = {convert_num_to_si(Ki)}\nKp = {convert_num_to_si(Kp)}')
 
             self.update_labels()
 
@@ -191,7 +192,10 @@ class Resistor(QDialog):
             self.close()
 
     def get_resistor_label(self) -> str:
-        return f'{self.resistive_value}Ом'
+        if self.resistive_value.isdigit():
+            return f'{self.resistive_value} Ом'
+        else:
+            return f'{self.resistive_value}Ом'
 
 
 class Generator(QDialog):
@@ -261,7 +265,10 @@ class Capacitor(QDialog):
             self.close()
 
     def get_capacitance_label(self):
-        return f'{self.capacitance}Ф'
+        if self.capacitance.isdigit():
+            return f'{self.capacitance} Ф'
+        else:
+            return f'{self.capacitance}Ф'
 
 
 class Battery(QDialog):
@@ -287,7 +294,10 @@ class Battery(QDialog):
         self.close()
 
     def get_battery_label(self):
-        return f'{self.voltage}В'
+        if self.voltage.isdigit():
+            return f'{self.voltage} В'
+        else:
+            return f'{self.voltage}В'
 
 
 class Oscilloscope(QDialog):
@@ -318,9 +328,9 @@ class Oscilloscope(QDialog):
         self.init_DUI()
 
     def init_DUI(self):
-        self.layout_osci.addWidget(self.label_time_base)
-        self.layout_osci.addWidget(self.combo_time_base)
-        self.layout_osci.addWidget(self.spin_time_base)
+        # self.layout_osci.addWidget(self.label_time_base)
+        # self.layout_osci.addWidget(self.combo_time_base)
+        # self.layout_osci.addWidget(self.spin_time_base)
         self.layout_osci.addWidget(self.label_channel_a)
         self.layout_osci.addWidget(self.combo_channel_a)
         self.layout_osci.addWidget(self.spin_channel_a)
@@ -371,13 +381,14 @@ class Oscilloscope(QDialog):
         y2 = (self.params.get('Un') * np.sin(2 * np.pi * self.params.get('generator_f') * x)) \
             * osci_multiplaer_b + offset_by_y2_in_osci
         fig, ax = plt.subplots()
-        ax.plot(x, y, label='Генератор')
-        ax.plot(x, y2, label='Услининый сигнал')
-        ax.legend()
+        ax.plot(x, y, label='Channel A')
+        ax.plot(x, y2, label='Channel B')
+        ax.legend(loc='lower right')
         plt.xlabel('Время, t')
         plt.ylabel('Напряжение, U')
         plt.title('Осцилограф')
         plt.grid(True)
+        plt.yticks(range(-10, 11, 1))
         plt.show()
 
 
@@ -515,7 +526,7 @@ def set_proper_value(value_to_correct: float) -> str:
 
 def main():
     application = QApplication(sys.argv)
-    window = Main_Window()
+    window = MainWindow()
     sys.exit(application.exec_())
 
 
