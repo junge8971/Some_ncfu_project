@@ -27,6 +27,8 @@ share/python-wheels/
 .installed.cfg
 *.egg
 *.idea
+*.test
+/test
 MANIFEST
 
 # PyInstaller

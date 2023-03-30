@@ -58,9 +58,6 @@ def main():
     error_pos = 1
     encoded_data[error_pos] = 1
     print("Encoded data with error:", encoded_data)
-    error_pos = 2
-    encoded_data[error_pos] = 0
-    print("Encoded data with error:", encoded_data)
 
     # Декодирую ошибку
     decoded_data, is_corrected, error_pos = hemming_7_4_decode(encoded_data)
@@ -68,11 +65,6 @@ def main():
     print("Decoded data:", decoded_data)
     print("Error corrected:", is_corrected)
 
-'''хеминг 20 5'''
-''' 
-интерфейс
-3 куба
-и окно для 2 ошибки
-'''
+
 if __name__ == '__main__':
     main()
