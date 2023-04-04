@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from typing import Tuple
+from typing import Tuple, List
 
 
 class Hamming:
     def __init__(self):
         self.user_message_len = None
-        self.number_of_party_bits = None
-        self.parity_indices = None
+        self.number_of_check_bits = None
+        self.check_indices = None
         self.generating_matrix = None
 
     def hamming_encode(self, message: np.ndarray) -> np.ndarray:
@@ -24,31 +24,29 @@ class Hamming:
         """
         # Calculate message length
         self.user_message_len = len(message)
-        # Calculate number of parity bits based on message length
-        self.number_of_party_bits = int(np.ceil(np.log2(self.user_message_len + 1)))
+        # Calculate number of check bits based on message length
+        self.number_of_check_bits = int(np.ceil(np.log2(self.user_message_len + 1)))
         # Find powers of two in message length -1 to get coordinates of check bits
-        self.parity_indices = np.array([2**i - 1 for i in range(self.number_of_party_bits)])
+        self.check_indices = np.array([2 ** i - 1 for i in range(self.number_of_check_bits)])
 
         # Create a np.ndarray consisting of 0 corresponding to the length of the message + the number of check bits
-        encoded = np.zeros(self.user_message_len + self.number_of_party_bits, dtype=int)
+        encoded = np.zeros(self.user_message_len + self.number_of_check_bits, dtype=int)
 
-        # Fill in the information bits in the encode list
+        # Fill in the information bits in encode list
         counter = 0
         for item_id, _ in enumerate(encoded):
-            if item_id not in self.parity_indices:
+            if item_id not in self.check_indices:
                 encoded[item_id] = message[counter]
                 counter += 1
         # Create a generating matrix
         self._create_generating_matrix()
 
         # From the generating matrix and the encoded array, calculate the value of the check bits
-        party_bits = []
-        for num_of_party_bit in range(self.number_of_party_bits):
-            party_bits.append(np.sum(encoded * self.generating_matrix[num_of_party_bit]) % 2)
+        check_bits = self._calculate_syndrome(encoded)
 
-        # Insert check bits into their addresses
-        for party_bit_id, element in enumerate(self.parity_indices):
-            encoded[element] = party_bits[party_bit_id]
+        # Insert parity bits into their addresses
+        for check_bit_id, element in enumerate(self.check_indices):
+            encoded[element] = check_bits[check_bit_id]
 
         return encoded
 
@@ -62,33 +60,34 @@ class Hamming:
         Returns:
             A numpy array containing the decoded binary message.
         """
-        n = len(encoded)
-        k = int(np.ceil(np.log2(n)))
-        parity_indices = [2**i - 1 for i in range(k)]
-        print(parity_indices)
-        syndrome = 0
-        for i in parity_indices:
-            p = 0
-            for j in range(i, n, 2*i+1):
-                p = np.sum(encoded[j:j + i])
-                syndrome |= p << i
-        if syndrome == 0:
-            encoded = np.delete(encoded, parity_indices)
-            return encoded, syndrome > 0, syndrome
-        else:
-            flipped_bit_index = syndrome - 1
-            encoded[flipped_bit_index] ^= 1
-            encoded = np.delete(encoded, parity_indices)
-            return encoded, syndrome > 0, syndrome
+        # Calculate error position and correct errors if possible.
+        binary_syndrome = self._calculate_syndrome(encoded)
+        error_pos = 0
+        for num, item in enumerate(binary_syndrome):
+            error_pos += item * (self.check_indices[num] + 1)
+        if error_pos > 0:
+            encoded[error_pos - 1] ^= 1
+
+        # Extract original message bits.
+        decoded_msg = np.delete(encoded, self.check_indices)
+
+        return decoded_msg, error_pos > 0, error_pos
 
     def _create_generating_matrix(self):
-        if self.user_message_len and self.number_of_party_bits and self.parity_indices is not None:
+        """
+            Creates a matrix for calculating check bits and syndromes based on:
+            message length,
+            number of check bits,
+            check bits addresses
+            Only for use inside the class!
+        """
+        if self.user_message_len and self.number_of_check_bits and self.check_indices is not None:
             generating_matrix = []
-            for item in self.parity_indices + 1:
+            for item in self.check_indices + 1:
                 counter = 0
                 status = False
                 list_of_elements_for_matrix = []
-                for _ in range(self.user_message_len + self.number_of_party_bits + 1):
+                for _ in range(self.user_message_len + self.number_of_check_bits + 1):
                     if counter != item:
                         if status:
                             list_of_elements_for_matrix.append(1)
@@ -107,11 +106,30 @@ class Hamming:
                 generating_matrix.append(list_of_elements_for_matrix[1:])
             self.generating_matrix = np.array(generating_matrix)
 
+    def _calculate_syndrome(self, message: np.ndarray) -> List[int]:
+        """
+            Calculates the syndrome or the value of the check bits
+            Only for use inside the class!
+
+            Args:
+                message: numpy array that contain message for calculate
+
+            Returns:
+                A list containing integers whose value represents the check bits / binary syndrome .
+        """
+        if self.number_of_check_bits is not None and message is not False:
+            result = []
+            for num in range(self.number_of_check_bits):
+                result.append(np.sum(message * self.generating_matrix[num]) % 2)
+
+            return result
+
 
 def main():
     # Example binary data
     data = np.array([1, 1, 1, 1, 1, 1, 1, 1], dtype=int)
     print(f'Input data: {data}')
+
     coder = Hamming()
 
     # Encode the data using a Hamming code
@@ -119,14 +137,13 @@ def main():
     # Print the encoded data
     print(f"Encoded data: {encoded}")
 
-    ''''
     # Introduce an error into the encoded data
     encoded[8] ^= 1
-
     # Print the modified encoded data
     print(f"Modified encoded data: {encoded}")
+
     # Decode the encoded data
-    decoded_data, is_corrected, error_pos = hamming_decode(encoded)
+    decoded_data, is_corrected, error_pos = coder.hamming_decode(encoded)
 
     # Print the decoded data
     print('Error position:', error_pos)
@@ -137,8 +154,6 @@ def main():
         print('Input array and decoded array ar equal')
     else:
         print('Input array and decoded array not equal')
-        
-    '''
 
 
 if __name__ == '__main__':
