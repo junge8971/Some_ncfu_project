@@ -43,7 +43,7 @@ class Hemming_20_15_encode:
 
     def hamming_20_15_decode(self, encoded_data: np.ndarray) -> Tuple[np.ndarray, bool, int]:
         """
-        Decodes a 20-bit message encoded using Hamming (20, 15) code.
+        Decodes a 20-bit message encoded using Hemming (20, 15) code.
 
         Args:
             encoded_data: A 20-bit binary string.

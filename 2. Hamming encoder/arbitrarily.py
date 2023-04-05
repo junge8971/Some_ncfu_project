@@ -14,13 +14,13 @@ class Hamming:
 
     def hamming_encode(self, message: np.ndarray) -> np.ndarray:
         """
-        Encode a binary message using a Hamming code.
+        Encode a binary message using a Hemming code.
 
         Args:
             message: A binary numpy array to be encoded.
 
         Returns:
-            A numpy array containing the Hamming-encoded message.
+            A numpy array containing the Hemming-encoded message.
         """
         # Calculate message length
         self.user_message_len = len(message)
@@ -52,10 +52,10 @@ class Hamming:
 
     def hamming_decode(self, encoded: np.ndarray) -> Tuple[np.ndarray, bool, int]:
         """
-        Decode a Hamming-encoded message.
+        Decode a Hemming-encoded message.
 
         Args:
-            encoded: A numpy array containing the Hamming-encoded message.
+            encoded: A numpy array containing the Hemming-encoded message.
 
         Returns:
             A numpy array containing the decoded binary message.
@@ -71,7 +71,7 @@ class Hamming:
         # Extract original message bits.
         decoded_msg = np.delete(encoded, self.check_indices)
 
-        return decoded_msg, error_pos > 0, error_pos
+        return decoded_msg, error_pos > 0, error_pos - 1
 
     def _create_generating_matrix(self):
         """
@@ -127,18 +127,20 @@ class Hamming:
 
 def main():
     # Example binary data
-    data = np.array([1, 1, 1, 1, 1, 1, 1, 1], dtype=int)
+    data = np.array([1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1], dtype=int)
     print(f'Input data: {data}')
 
     coder = Hamming()
 
-    # Encode the data using a Hamming code
+    # Encode the data using a Hemming code
     encoded = coder.hamming_encode(data)
     # Print the encoded data
     print(f"Encoded data: {encoded}")
 
     # Introduce an error into the encoded data
-    encoded[8] ^= 1
+    error_pos = int(input('>>'))
+    encoded[error_pos] ^= 1
+
     # Print the modified encoded data
     print(f"Modified encoded data: {encoded}")
 
