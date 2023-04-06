@@ -132,6 +132,18 @@ class Hemming:
         else:
             return int(np.ceil(np.log2(self.user_message_len + 1)))
 
+    def generate_message(self):
+        if self.user_message_len:
+            self.message = np.random.randint(2, size=self.user_message_len)
+        else:
+            raise ValueError('Длинна информационного блока не указана')
+
+    def get_message(self) -> str:
+        if self.message is not None:
+            return np.array2string(self.message, separator='')
+        else:
+            raise ValueError('Сообщение не ввидено/сгенериновано')
+
 
 class HemmingView(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -167,6 +179,12 @@ class HemmingView(QMainWindow, Ui_MainWindow):
             self.label_coder_type.setText(f'Тип  блочного кода Хэмминга:'
                                           f' {message_len + number_of_check_bits},{message_len}')
 
+    def connect_generate_message_button(self, callback):
+        self.generate_message.clicked.connect(callback)
+
+    def set_input_message_value(self, message: str):
+        self.input_message.setText(message)
+
 
 class HemmingController(QObject):
     def __init__(self, model, view):
@@ -175,6 +193,7 @@ class HemmingController(QObject):
         self._view = view
 
         self._view.connect_message_len_button(self.handle_message_len_button_click)
+        self._view.connect_generate_message_button(self.handle_generate_message_button_click)
 
     def handle_message_len_button_click(self):
         message_len = self._view.get_message_len_value()
@@ -185,6 +204,12 @@ class HemmingController(QObject):
         self._view.set_label_number_of_check_bit(number_of_check_bits)
 
         self._view.set_label_coder_type(message_len, number_of_check_bits)
+
+    def handle_generate_message_button_click(self):
+        self._model.generate_message()
+        message = self._model.get_message()
+        self._view.set_input_message_value(message)
+
 
 
 def main():
