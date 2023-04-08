@@ -126,6 +126,12 @@ class Hemming:
         if user_message_len:
             self.user_message_len = user_message_len
 
+    def get_value_user_message_len(self) -> int:
+        if self.user_message_len:
+            return self.user_message_len
+        else:
+            raise ValueError('Длинна сообщения не определенна')
+
     def get_number_of_check_bits(self) -> int:
         if self.number_of_check_bits:
             return self.number_of_check_bits
@@ -140,9 +146,28 @@ class Hemming:
 
     def get_message(self) -> str:
         if self.message is not None:
-            return np.array2string(self.message, separator='')
+            return np.array2string(self.message, separator='')[1:-1]
         else:
             raise ValueError('Сообщение не ввидено/сгенериновано')
+
+    def set_message(self, input_message: str):
+        if input_message:
+            message_list = [int(i) for i in input_message]
+            self.message = np.array(message_list)
+        else:
+            raise ValueError('Передаваемое сообщение пустое')
+
+    def get_check_indices(self) -> str:
+        return np.array2string(self.check_indices, separator=' ')[1:-1]
+
+    def get_encoded_message(self) -> str:
+        return np.array2string(self.encoded_message, separator='')[1:-1]
+
+    def get_generating_matrix(self) -> list:
+        result_generating_matrix = []
+        for item in self.generating_matrix:
+            result_generating_matrix.append(np.array2string(item, separator='')[1:-1])
+        return result_generating_matrix
 
 
 class HemmingView(QMainWindow, Ui_MainWindow):
@@ -185,6 +210,49 @@ class HemmingView(QMainWindow, Ui_MainWindow):
     def set_input_message_value(self, message: str):
         self.input_message.setText(message)
 
+    def connect_encode_button(self, callback):
+        self.encode_message.clicked.connect(callback)
+
+    def get_input_message_value(self) -> str:
+        if self.input_message.toPlainText():
+            return self.input_message.toPlainText()
+        else:
+            raise ValueError('В поле с сообщением пусто')
+
+    def set_label_check_indices(self, check_indices: str):
+        self.label_check_indices.setText(f'Координаты проверочных бит: {check_indices}')
+
+    def set_label_input_data(self, input_data: str):
+        self.label_input_data.setText(f'Исходный информационный блок: \n {input_data}')
+
+    def set_label_encoded(self, encoded_message: str, check_indices: str):
+        start_string = '<html><body>'
+        end_sting = '</body></html>'
+        open_colored_teg = '<span style="color:#32CD32;">'
+        close_colored_teg = '</span>'
+        check_indices = check_indices.split(' ')
+        check_indices_for_iterations = []
+        for item in check_indices:
+            try:
+                check_indices_for_iterations.append(int(item))
+            except ValueError:
+                continue
+        message_with_color = ''
+        for id, item in enumerate(encoded_message):
+            if id in check_indices_for_iterations:
+                message_with_color += (open_colored_teg + item + close_colored_teg)
+            else:
+                message_with_color += item
+        self.label_encoded.setText('{0}Закодированный информационный блок: \n {1}{2}'.format(
+            start_string, end_sting, message_with_color)
+        )
+
+    def set_label_matrix(self, generating_matrix: list):
+        matrix = ''
+        for item in generating_matrix:
+            matrix += item + '\n'
+        self.label_matrix.setText(matrix)
+
 
 class HemmingController(QObject):
     def __init__(self, model, view):
@@ -194,6 +262,7 @@ class HemmingController(QObject):
 
         self._view.connect_message_len_button(self.handle_message_len_button_click)
         self._view.connect_generate_message_button(self.handle_generate_message_button_click)
+        self._view.connect_encode_button(self.handle_encode_button_click)
 
     def handle_message_len_button_click(self):
         message_len = self._view.get_message_len_value()
@@ -210,6 +279,22 @@ class HemmingController(QObject):
         message = self._model.get_message()
         self._view.set_input_message_value(message)
 
+    def handle_encode_button_click(self):
+        message_for_encode = self._view.get_input_message_value()
+        message_len_that_was_user_input = self._model.get_value_user_message_len()
+        if len(message_for_encode) != message_len_that_was_user_input:
+            raise ValueError("Введённая длина сообщения и длинна введённого сообщения не равны")
+        else:
+            self._model.set_message(message_for_encode)
+            self._model.hamming_encode()
+            check_indices = self._model.get_check_indices()
+            self._view.set_label_check_indices(check_indices)
+            message_for_view = self._model.get_message()
+            self._view.set_label_input_data(message_for_view)
+            encoded_message = self._model.get_encoded_message()
+            self._view.set_label_encoded(encoded_message, check_indices)
+            get_generating_matrix = self._model.get_generating_matrix()
+            self._view.set_label_matrix(get_generating_matrix)
 
 
 def main():
