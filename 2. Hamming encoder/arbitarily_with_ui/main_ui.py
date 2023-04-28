@@ -17,7 +17,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(1127, 822)
+        MainWindow.resize(1127, 734)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.verticalLayoutWidget = QWidget(self.centralwidget)
@@ -78,7 +78,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayoutWidget_4 = QWidget(self.centralwidget)
         self.verticalLayoutWidget_4.setObjectName(u"verticalLayoutWidget_4")
-        self.verticalLayoutWidget_4.setGeometry(QRect(10, 310, 331, 251))
+        self.verticalLayoutWidget_4.setGeometry(QRect(790, 10, 331, 281))
         self.verticalLayout_4 = QVBoxLayout(self.verticalLayoutWidget_4)
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
         self.verticalLayout_4.setContentsMargins(0, 0, 0, 0)
@@ -101,7 +101,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayoutWidget_5 = QWidget(self.centralwidget)
         self.verticalLayoutWidget_5.setObjectName(u"verticalLayoutWidget_5")
-        self.verticalLayoutWidget_5.setGeometry(QRect(780, 300, 341, 341))
+        self.verticalLayoutWidget_5.setGeometry(QRect(350, 320, 421, 341))
         self.verticalLayout_5 = QVBoxLayout(self.verticalLayoutWidget_5)
         self.verticalLayout_5.setObjectName(u"verticalLayout_5")
         self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
@@ -117,27 +117,25 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_5.addWidget(self.label_encoded)
 
-        self.label_modifaed = QLabel(self.verticalLayoutWidget_5)
-        self.label_modifaed.setObjectName(u"label_modifaed")
-        self.label_modifaed.setWordWrap(True)
+        self.label_matrix_info = QLabel(self.verticalLayoutWidget_5)
+        self.label_matrix_info.setObjectName(u"label_matrix_info")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.label_matrix_info.sizePolicy().hasHeightForWidth())
+        self.label_matrix_info.setSizePolicy(sizePolicy1)
 
-        self.verticalLayout_5.addWidget(self.label_modifaed)
+        self.verticalLayout_5.addWidget(self.label_matrix_info)
 
-        self.label_binary_syndrome_and_error_pos = QLabel(self.verticalLayoutWidget_5)
-        self.label_binary_syndrome_and_error_pos.setObjectName(u"label_binary_syndrome_and_error_pos")
-        self.label_binary_syndrome_and_error_pos.setWordWrap(True)
+        self.label_matrix = QLabel(self.verticalLayoutWidget_5)
+        self.label_matrix.setObjectName(u"label_matrix")
+        self.label_matrix.setAlignment(Qt.AlignCenter)
 
-        self.verticalLayout_5.addWidget(self.label_binary_syndrome_and_error_pos)
-
-        self.label_decode = QLabel(self.verticalLayoutWidget_5)
-        self.label_decode.setObjectName(u"label_decode")
-        self.label_decode.setWordWrap(True)
-
-        self.verticalLayout_5.addWidget(self.label_decode)
+        self.verticalLayout_5.addWidget(self.label_matrix)
 
         self.verticalLayoutWidget_6 = QWidget(self.centralwidget)
         self.verticalLayoutWidget_6.setObjectName(u"verticalLayoutWidget_6")
-        self.verticalLayoutWidget_6.setGeometry(QRect(780, 10, 341, 291))
+        self.verticalLayoutWidget_6.setGeometry(QRect(10, 320, 331, 341))
         self.verticalLayout_6 = QVBoxLayout(self.verticalLayoutWidget_6)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.verticalLayout_6.setContentsMargins(0, 0, 0, 0)
@@ -167,24 +165,27 @@ class Ui_MainWindow(object):
 
         self.verticalLayoutWidget_3 = QWidget(self.centralwidget)
         self.verticalLayoutWidget_3.setObjectName(u"verticalLayoutWidget_3")
-        self.verticalLayoutWidget_3.setGeometry(QRect(349, 309, 421, 331))
+        self.verticalLayoutWidget_3.setGeometry(QRect(790, 320, 331, 341))
         self.verticalLayout_3 = QVBoxLayout(self.verticalLayoutWidget_3)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
         self.verticalLayout_3.setContentsMargins(0, 0, 0, 0)
-        self.label_matrix_info = QLabel(self.verticalLayoutWidget_3)
-        self.label_matrix_info.setObjectName(u"label_matrix_info")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.label_matrix_info.sizePolicy().hasHeightForWidth())
-        self.label_matrix_info.setSizePolicy(sizePolicy1)
+        self.label_modifaed = QLabel(self.verticalLayoutWidget_3)
+        self.label_modifaed.setObjectName(u"label_modifaed")
+        self.label_modifaed.setWordWrap(True)
 
-        self.verticalLayout_3.addWidget(self.label_matrix_info)
+        self.verticalLayout_3.addWidget(self.label_modifaed)
 
-        self.label_matrix = QLabel(self.verticalLayoutWidget_3)
-        self.label_matrix.setObjectName(u"label_matrix")
+        self.label_binary_syndrome_and_error_pos = QLabel(self.verticalLayoutWidget_3)
+        self.label_binary_syndrome_and_error_pos.setObjectName(u"label_binary_syndrome_and_error_pos")
+        self.label_binary_syndrome_and_error_pos.setWordWrap(True)
 
-        self.verticalLayout_3.addWidget(self.label_matrix)
+        self.verticalLayout_3.addWidget(self.label_binary_syndrome_and_error_pos)
+
+        self.label_decode = QLabel(self.verticalLayoutWidget_3)
+        self.label_decode.setObjectName(u"label_decode")
+        self.label_decode.setWordWrap(True)
+
+        self.verticalLayout_3.addWidget(self.label_decode)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
@@ -203,22 +204,22 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0438\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u043e\u043d\u043d\u044b\u0439 \u0441\u0438\u043c\u0432\u043e\u043b \u0434\u043b\u044f \u0438\u0441\u0441\u043b\u0435\u0434\u043e\u0432\u0430\u043d\u0438\u0435 \u0431\u043b\u043e\u0447\u043d\u043e\u0433\u043e \u043a\u043e\u0434\u0430", None))
-        self.message_len_button.setText(QCoreApplication.translate("MainWindow", u"\u0412\u043d\u0435\u0441\u0442\u0438", None))
+        self.message_len_button.setText(QCoreApplication.translate("MainWindow", u"\u0412\u0432\u0435\u0441\u0442\u0438", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0438\u043b\u0438 \u0441\u0433\u0435\u043d\u0435\u0440\u0438\u0440\u0443\u0439\u0442\u0435 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 \u0441 \u0437\u0430\u0434\u0430\u043d\u043d\u043e\u0439 \u043f\u043e \u0432\u0430\u0440\u0438\u0430\u043d\u0442\u0443 \u0434\u043b\u0438\u043d\u043d\u043e\u0439", None))
         self.generate_message.setText(QCoreApplication.translate("MainWindow", u"\u0421\u0433\u0435\u043d\u0435\u0440\u0438\u0440\u043e\u0432\u0430\u0442\u044c", None))
         self.encode_message.setText(QCoreApplication.translate("MainWindow", u"\u0417\u0430\u043a\u043e\u0434\u0438\u0440\u043e\u0432\u0430\u0442\u044c", None))
         self.label_7.setText(QCoreApplication.translate("MainWindow", u"\u0412\u043d\u0435\u0441\u0438\u0442\u0435 \u0430\u0434\u0440\u0435\u0441 \u0438\u043b\u0438 \u0430\u0434\u0440\u0435\u0441\u0430 \u0440\u0430\u0437\u0440\u0430\u0434\u043e\u0432 \u0434\u043b\u044f \u0432\u043d\u0435\u0441\u0435\u043d\u0438\u044f \u043e\u0448\u0438\u0431\u043a\u0438", None))
-        self.modify_and_decod_button.setText(QCoreApplication.translate("MainWindow", u"\u0412\u043d\u0435\u0441\u0442\u0438 \u043e\u0448\u0438\u0431\u043a\u0443 \u0438 \u0434\u0435\u043a\u043e\u0434\u0438\u0440\u043e\u0432\u0430\u0442\u044c", None))
+        self.modify_and_decod_button.setText(QCoreApplication.translate("MainWindow", u"\u0412\u0432\u0435\u0441\u0442\u0438 \u043e\u0448\u0438\u0431\u043a\u0443 \u0438 \u0434\u0435\u043a\u043e\u0434\u0438\u0440\u043e\u0432\u0430\u0442\u044c", None))
         self.label_input_data.setText(QCoreApplication.translate("MainWindow", u"\u0418\u0441\u0445\u043e\u0434\u043d\u044b\u0439 \u0438\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u043e\u043d\u043d\u044b\u0439 \u0431\u043b\u043e\u043a: ", None))
         self.label_encoded.setText(QCoreApplication.translate("MainWindow", u"\u0417\u0430\u043a\u043e\u0434\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u044b\u0439 \u0438\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u043e\u043d\u043d\u044b\u0439 \u0431\u043b\u043e\u043a: ", None))
-        self.label_modifaed.setText(QCoreApplication.translate("MainWindow", u"\u041c\u043e\u0434\u0438\u0444\u0438\u0446\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u044b\u0439 \u0438\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u043e\u043d\u043d\u044b\u0439 \u0431\u043b\u043e\u043a: ", None))
-        self.label_binary_syndrome_and_error_pos.setText(QCoreApplication.translate("MainWindow", u"\u0421\u0438\u043d\u0434\u043e\u043c \u0438 \u043f\u043e\u0437\u0438\u0446\u0438\u044e \u043e\u0448\u0438\u0431\u043a\u0438: ", None))
-        self.label_decode.setText(QCoreApplication.translate("MainWindow", u"\u0414\u0435\u043a\u043e\u0434\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u044b\u0439 \u0438\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u043e\u043d\u043d\u044b\u0439 \u0431\u043b\u043e\u043a: ", None))
+        self.label_matrix_info.setText(QCoreApplication.translate("MainWindow", u"\u0413\u0435\u043d\u0435\u0440\u0438\u0440\u0443\u044e\u0449\u0430\u044f \u043c\u0430\u0442\u0440\u0438\u0446\u0430:", None))
+        self.label_matrix.setText("")
         self.label_message_len.setText(QCoreApplication.translate("MainWindow", u"\u0414\u043b\u0438\u043d\u043d\u0430 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f:", None))
         self.label_number_of_check_bit.setText(QCoreApplication.translate("MainWindow", u"\u041a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e \u043f\u0440\u043e\u0432\u0435\u0440\u043e\u0447\u043d\u044b\u0445 \u0431\u0438\u0442: ", None))
         self.label_coder_type.setText(QCoreApplication.translate("MainWindow", u"\u0422\u0438\u043f  \u0431\u043b\u043e\u0447\u043d\u043e\u0433\u043e \u043a\u043e\u0434\u0430 \u0425\u044d\u043c\u043c\u0438\u043d\u0433\u0430: ", None))
         self.label_check_indices.setText(QCoreApplication.translate("MainWindow", u"\u041a\u043e\u043e\u0440\u0434\u0438\u043d\u0430\u0442\u044b \u043f\u0440\u043e\u0432\u0435\u0440\u043e\u0447\u043d\u044b\u0445 \u0431\u0438\u0442: ", None))
-        self.label_matrix_info.setText(QCoreApplication.translate("MainWindow", u"\u0413\u0435\u043d\u0435\u0440\u0438\u0440\u0443\u044e\u0449\u0430\u044f \u043c\u0430\u0442\u0440\u0438\u0446\u0430:", None))
-        self.label_matrix.setText("")
+        self.label_modifaed.setText(QCoreApplication.translate("MainWindow", u"\u041c\u043e\u0434\u0438\u0444\u0438\u0446\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u044b\u0439 \u0438\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u043e\u043d\u043d\u044b\u0439 \u0431\u043b\u043e\u043a: ", None))
+        self.label_binary_syndrome_and_error_pos.setText(QCoreApplication.translate("MainWindow", u"\u0421\u0438\u043d\u0434\u043e\u043c \u0438 \u043f\u043e\u0437\u0438\u0446\u0438\u044e \u043e\u0448\u0438\u0431\u043a\u0438: ", None))
+        self.label_decode.setText(QCoreApplication.translate("MainWindow", u"\u0414\u0435\u043a\u043e\u0434\u0438\u0440\u043e\u0432\u0430\u043d\u043d\u044b\u0439 \u0438\u043d\u0444\u043e\u0440\u043c\u0430\u0446\u0438\u043e\u043d\u043d\u044b\u0439 \u0431\u043b\u043e\u043a: ", None))
     # retranslateUi
 

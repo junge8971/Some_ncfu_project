@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1127</width>
-    <height>822</height>
+    <height>734</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -43,7 +43,7 @@
      <item>
       <widget class="QPushButton" name="message_len_button">
        <property name="text">
-        <string>Внести</string>
+        <string>Ввести</string>
        </property>
       </widget>
      </item>
@@ -101,10 +101,10 @@
    <widget class="QWidget" name="verticalLayoutWidget_4">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>310</y>
+      <x>790</x>
+      <y>10</y>
       <width>331</width>
-      <height>251</height>
+      <height>281</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -127,7 +127,7 @@
      <item>
       <widget class="QPushButton" name="modify_and_decod_button">
        <property name="text">
-        <string>Внести ошибку и декодировать</string>
+        <string>Ввести ошибку и декодировать</string>
        </property>
       </widget>
      </item>
@@ -136,9 +136,9 @@
    <widget class="QWidget" name="verticalLayoutWidget_5">
     <property name="geometry">
      <rect>
-      <x>780</x>
-      <y>300</y>
-      <width>341</width>
+      <x>350</x>
+      <y>320</y>
+      <width>421</width>
       <height>341</height>
      </rect>
     </property>
@@ -164,32 +164,25 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_modifaed">
-       <property name="text">
-        <string>Модифицированный информационный блок: </string>
+      <widget class="QLabel" name="label_matrix_info">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
-       <property name="wordWrap">
-        <bool>true</bool>
+       <property name="text">
+        <string>Генерирующая матрица:</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_binary_syndrome_and_error_pos">
+      <widget class="QLabel" name="label_matrix">
        <property name="text">
-        <string>Синдом и позицию ошибки: </string>
+        <string/>
        </property>
-       <property name="wordWrap">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_decode">
-       <property name="text">
-        <string>Декодированный информационный блок: </string>
-       </property>
-       <property name="wordWrap">
-        <bool>true</bool>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
@@ -198,10 +191,10 @@
    <widget class="QWidget" name="verticalLayoutWidget_6">
     <property name="geometry">
      <rect>
-      <x>780</x>
-      <y>10</y>
-      <width>341</width>
-      <height>291</height>
+      <x>10</x>
+      <y>320</y>
+      <width>331</width>
+      <height>341</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -250,30 +243,40 @@
    <widget class="QWidget" name="verticalLayoutWidget_3">
     <property name="geometry">
      <rect>
-      <x>349</x>
-      <y>309</y>
-      <width>421</width>
-      <height>331</height>
+      <x>790</x>
+      <y>320</y>
+      <width>331</width>
+      <height>341</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
-      <widget class="QLabel" name="label_matrix_info">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
+      <widget class="QLabel" name="label_modifaed">
        <property name="text">
-        <string>Генерирующая матрица:</string>
+        <string>Модифицированный информационный блок: </string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_matrix">
+      <widget class="QLabel" name="label_binary_syndrome_and_error_pos">
        <property name="text">
-        <string/>
+        <string>Синдом и позицию ошибки: </string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_decode">
+       <property name="text">
+        <string>Декодированный информационный блок: </string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
