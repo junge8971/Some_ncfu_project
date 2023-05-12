@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1127</width>
+    <width>1207</width>
     <height>734</height>
    </rect>
   </property>
@@ -26,6 +26,11 @@
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QLabel" name="label">
+       <property name="font">
+        <font>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Введите информационный символ для исследование блочного кода</string>
        </property>
@@ -61,6 +66,11 @@
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
       <widget class="QLabel" name="label_2">
+       <property name="font">
+        <font>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Введите или сгенерируйте сообщение с заданной по варианту длинной</string>
        </property>
@@ -70,15 +80,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QTextEdit" name="input_message">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="lineWrapMode">
-        <enum>QTextEdit::NoWrap</enum>
+      <widget class="QLineEdit" name="input_message">
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>
@@ -103,13 +107,18 @@
      <rect>
       <x>790</x>
       <y>10</y>
-      <width>331</width>
+      <width>401</width>
       <height>281</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_4">
      <item>
       <widget class="QLabel" name="label_7">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Внесите адрес или адреса разрадов для внесения ошибки</string>
        </property>
@@ -144,7 +153,27 @@
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_5">
      <item>
+      <widget class="QLabel" name="label_check_indices">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="text">
+        <string>Координаты проверочных бит: </string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QLabel" name="label_input_data">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Исходный информационный блок: </string>
        </property>
@@ -155,6 +184,11 @@
      </item>
      <item>
       <widget class="QLabel" name="label_encoded">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Закодированный информационный блок: </string>
        </property>
@@ -171,6 +205,11 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Генерирующая матрица:</string>
        </property>
@@ -178,6 +217,11 @@
      </item>
      <item>
       <widget class="QLabel" name="label_matrix">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string/>
        </property>
@@ -200,6 +244,11 @@
     <layout class="QVBoxLayout" name="verticalLayout_6">
      <item>
       <widget class="QLabel" name="label_message_len">
+       <property name="font">
+        <font>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Длинна сообщения:</string>
        </property>
@@ -210,6 +259,11 @@
      </item>
      <item>
       <widget class="QLabel" name="label_number_of_check_bit">
+       <property name="font">
+        <font>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Количество проверочных бит: </string>
        </property>
@@ -220,18 +274,13 @@
      </item>
      <item>
       <widget class="QLabel" name="label_coder_type">
+       <property name="font">
+        <font>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Тип  блочного кода Хэмминга: </string>
-       </property>
-       <property name="wordWrap">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="label_check_indices">
-       <property name="text">
-        <string>Координаты проверочных бит: </string>
        </property>
        <property name="wordWrap">
         <bool>true</bool>
@@ -245,13 +294,18 @@
      <rect>
       <x>790</x>
       <y>320</y>
-      <width>331</width>
+      <width>401</width>
       <height>341</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
       <widget class="QLabel" name="label_modifaed">
+       <property name="font">
+        <font>
+         <pointsize>9</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Модифицированный информационный блок: </string>
        </property>
@@ -262,6 +316,11 @@
      </item>
      <item>
       <widget class="QLabel" name="label_binary_syndrome_and_error_pos">
+       <property name="font">
+        <font>
+         <pointsize>9</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Синдом и позицию ошибки: </string>
        </property>
@@ -272,6 +331,11 @@
      </item>
      <item>
       <widget class="QLabel" name="label_decode">
+       <property name="font">
+        <font>
+         <pointsize>9</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>Декодированный информационный блок: </string>
        </property>
@@ -288,7 +352,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1127</width>
+     <width>1207</width>
      <height>26</height>
     </rect>
    </property>

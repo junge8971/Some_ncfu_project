@@ -529,7 +529,7 @@ class HemmingView(Window):
                     message_with_color += separator + open_colored_teg + item + close_colored_teg + '|'
                 else:
                     message_with_color += separator + item + '|'
-            self.label_modifaed.setText(f'{start_string} Модифицированный информационный блок: \n'
+            self.label_modifaed.setText(f'{start_string} Модифицированный информационный блок: <br>'
                                         f'{message_with_color} {end_sting} \n'
                                         f'\n {self._set_format_for_addresses_of_digits(modified_message)}')
             #self.label_modifaed.setText('{0}Модифицированный информационный блок: \n {1}{2} \n {3}'.format(
