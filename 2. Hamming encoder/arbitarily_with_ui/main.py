@@ -4,9 +4,158 @@
 import numpy as np
 import sys
 from typing import List
+from PySide2.QtCore import *
+from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from PySide2.QtCore import QObject
-from main_ui import Ui_MainWindow
+
+
+class Window(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Кодирование и декодирование блочным кодом Хэмминга")
+        self.resize(1500, 750)
+
+        self.gridLayout = QGridLayout()
+        self.gridLayout.setContentsMargins(10, 0, 0, 0)
+
+        self.modify_and_decod_input = QLineEdit()
+        self.modify_and_decod_input.setObjectName(u"modify_and_decod_input")
+        self.gridLayout.addWidget(self.modify_and_decod_input, 3, 2, 1, 1)
+
+        self.modify_and_decod_button = QPushButton('Декодировать')
+        self.modify_and_decod_button.setObjectName(u"modify_and_decod_button")
+        self.gridLayout.addWidget(self.modify_and_decod_button, 4, 2, 1, 1)
+
+        self.label_message_len = QLabel('Длинна информационного блока:')
+        self.label_message_len.setObjectName(u"label_message_len")
+        font = QFont()
+        font.setPointSize(10)
+        self.label_message_len.setFont(font)
+        self.label_message_len.setWordWrap(True)
+        self.gridLayout.addWidget(self.label_message_len, 5, 0, 1, 1)
+
+        self.label_modifaed = QLabel('Модифицированный информационный блок: ')
+        self.label_modifaed.setObjectName(u"label_modifaed")
+        self.label_modifaed.setFont(font)
+        self.label_modifaed.setWordWrap(True)
+        self.gridLayout.addWidget(self.label_modifaed, 5, 2, 1, 1)
+
+        self.generate_message = QPushButton('Сгенерировать')
+        self.generate_message.setObjectName(u"generate_message")
+        self.gridLayout.addWidget(self.generate_message, 3, 1, 1, 1)
+
+        self.encode_message = QPushButton('Закодировать')
+        self.encode_message.setObjectName(u"encode_message")
+        self.gridLayout.addWidget(self.encode_message, 4, 1, 1, 1)
+
+        self.label_2 = QLabel('Введите в поле или сгенерируйте информационные биты с заданной по варианту длинной и нажмите кнопку закодировать')
+        self.label_2.setObjectName(u"label_2")
+        font1 = QFont()
+        font1.setPointSize(11)
+        self.label_2.setFont(font1)
+        self.label_2.setAlignment(Qt.AlignCenter)
+        self.label_2.setWordWrap(True)
+        self.gridLayout.addWidget(self.label_2, 1, 1, 1, 1)
+
+        self.label = QLabel('Введите длинну ифномационного блока')
+        self.label.setObjectName(u"label")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        self.label.setSizePolicy(sizePolicy1)
+        self.label.setFont(font1)
+        self.label.setLineWidth(2)
+        self.label.setMidLineWidth(0)
+        self.label.setAlignment(Qt.AlignCenter)
+        self.label.setWordWrap(True)
+        self.gridLayout.addWidget(self.label, 1, 0, 1, 1)
+
+        self.label_check_indices = QLabel('Координаты проверочных бит: ')
+        self.label_check_indices.setObjectName(u"label_check_indices")
+        self.label_check_indices.setFont(font)
+        self.label_check_indices.setWordWrap(True)
+        self.gridLayout.addWidget(self.label_check_indices, 5, 1, 1, 1)
+
+        self.label_number_of_check_bit = QLabel('Количество проверочных бит: ')
+        self.label_number_of_check_bit.setObjectName(u"label_number_of_check_bit")
+        self.label_number_of_check_bit.setFont(font)
+        self.label_number_of_check_bit.setWordWrap(True)
+        self.gridLayout.addWidget(self.label_number_of_check_bit, 6, 0, 1, 1)
+
+        self.label_input_data = QLabel('Исходный информационный блок: ')
+        self.label_input_data.setObjectName(u"label_input_data")
+        self.label_input_data.setFont(font)
+        self.label_input_data.setWordWrap(True)
+        self.gridLayout.addWidget(self.label_input_data, 6, 1, 1, 1)
+
+
+        self.label_binary_syndrome_and_error_pos = QLabel('Синдом и позиция ошибки: ')
+        self.label_binary_syndrome_and_error_pos.setObjectName(u"label_binary_syndrome_and_error_pos")
+        self.label_binary_syndrome_and_error_pos.setFont(font)
+        self.label_binary_syndrome_and_error_pos.setWordWrap(True)
+        self.gridLayout.addWidget(self.label_binary_syndrome_and_error_pos, 6, 2, 1, 1)
+
+        self.label_encoded = QLabel('Закодированный информационный блок: ')
+        self.label_encoded.setObjectName(u"label_encoded")
+        self.label_encoded.setFont(font)
+        self.label_encoded.setWordWrap(True)
+        self.gridLayout.addWidget(self.label_encoded, 7, 1, 1, 1)
+
+        self.label_3 = QLabel('Лабораторная работа: Иследование кода Хэмминга')
+        self.label_3.setObjectName(u"label_3")
+        font2 = QFont()
+        font2.setPointSize(12)
+        self.label_3.setFont(font2)
+        self.label_3.setAlignment(Qt.AlignCenter)
+        self.gridLayout.addWidget(self.label_3, 0, 1, 1, 1)
+
+        self.label_decode = QLabel('Исходный и декодированный информационный блок: ')
+        self.label_decode.setObjectName(u"label_decode")
+        self.label_decode.setFont(font)
+        self.label_decode.setWordWrap(True)
+        self.gridLayout.addWidget(self.label_decode, 7, 2, 1, 1)
+
+        self.label_matrix = QLabel()
+        self.label_matrix.setObjectName(u"label_matrix")
+        self.label_matrix.setFont(font)
+        self.label_matrix.setAlignment(Qt.AlignCenter)
+        self.gridLayout.addWidget(self.label_matrix, 9, 1, 1, 1)
+
+        self.label_coder_type = QLabel('Тип блочного кода: ')
+        self.label_coder_type.setObjectName(u"label_coder_type")
+        self.label_coder_type.setFont(font)
+        self.label_coder_type.setWordWrap(True)
+        self.gridLayout.addWidget(self.label_coder_type, 7, 0, 1, 1)
+
+        self.label_7 = QLabel('Внесите адрес или адреса разрадов для внесения ошибки, либо отсавьте поле пустым и нажмите на кнопку "Декодировать"')
+        self.label_7.setObjectName(u"label_7")
+        self.label_7.setFont(font1)
+        self.label_7.setAlignment(Qt.AlignCenter)
+        self.label_7.setWordWrap(True)
+        self.gridLayout.addWidget(self.label_7, 1, 2, 1, 1)
+
+        self.message_len_button = QPushButton('Внести')
+        self.message_len_button.setObjectName(u"message_len_button")
+        self.gridLayout.addWidget(self.message_len_button, 4, 0, 1, 1)
+
+        self.label_matrix_info = QLabel('Генерирующая матрица:')
+        self.label_matrix_info.setObjectName(u"label_matrix_info")
+        sizePolicy1.setHeightForWidth(self.label_matrix_info.sizePolicy().hasHeightForWidth())
+        self.label_matrix_info.setSizePolicy(sizePolicy1)
+        self.label_matrix_info.setFont(font)
+        self.gridLayout.addWidget(self.label_matrix_info, 8, 1, 1, 1)
+
+        self.input_message = QLineEdit()
+        self.input_message.setObjectName(u"input_message")
+        self.gridLayout.addWidget(self.input_message, 2, 1, 1, 1)
+
+        self.message_len = QLineEdit()
+        self.message_len.setObjectName(u"message_len")
+        self.gridLayout.addWidget(self.message_len, 3, 0, 1, 1)
+
+        self.setLayout(self.gridLayout)
 
 
 class Hemming:
@@ -61,13 +210,14 @@ class Hemming:
             # Calculate error position and correct errors if possible.
             self.binary_syndrome = self._calculate_syndrome(self.modified_message)
             error_pos = 0
+            decoded_msg = np.copy(self.modified_message)
             for num, item in enumerate(self.binary_syndrome):
                 error_pos += item * (self.check_indices[num] + 1)
             if error_pos > 0:
-                self.encoded_message[error_pos - 1] ^= 1
+                decoded_msg[error_pos - 1] ^= 1
 
             # Extract original message bits.
-            decoded_msg = np.delete(self.encoded_message, self.check_indices)
+            decoded_msg = np.delete(decoded_msg, self.check_indices)
             self.decoded_message = decoded_msg
             self.error_pos = error_pos - 1
 
@@ -214,20 +364,23 @@ class Hemming:
             result_generating_matrix.append(np.array2string(item, separator='')[1:-1])
         return result_generating_matrix
 
-    def set_modify_bits_in_encoded_message(self, bit_addresses_to_modify: list[int]):
-        if bit_addresses_to_modify and self.encoded_message is not None:
-            modified_message = []
-            for id, bit in enumerate(self.encoded_message):
-                if id in bit_addresses_to_modify:
-                    bit ^= 1
-                    modified_message.append(bit)
-                else:
-                    modified_message.append(bit)
+    def set_modify_bits_in_encoded_message(self, bit_addresses_to_modify: list[int] | None):
+        if bit_addresses_to_modify is not None:
+            if bit_addresses_to_modify and self.encoded_message is not None:
+                modified_message = []
+                for id, bit in enumerate(self.encoded_message):
+                    if id in bit_addresses_to_modify:
+                        bit ^= 1
+                        modified_message.append(bit)
+                    else:
+                        modified_message.append(bit)
 
-            self.modified_message = np.array(modified_message)
+                self.modified_message = np.array(modified_message)
 
+            else:
+                raise ValueError('Не получено закодированное сообщение для модификации')
         else:
-            raise ValueError('Не получено закодированное сообщение для модификации')
+            self.modified_message = self.encoded_message
 
     def get_modified_message(self) -> str:
         if self.modified_message is not None:
@@ -248,11 +401,9 @@ class Hemming:
             raise ValueError('Позиция ошибки и синдром не определены')
 
 
-class HemmingView(QMainWindow, Ui_MainWindow):
+class HemmingView(Window):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Кодирование и декодирование блочным кодом Хэмминга")
-        self.setupUi(self)
         self.show()
 
     def get_message_len_value(self) -> int:
@@ -307,8 +458,8 @@ class HemmingView(QMainWindow, Ui_MainWindow):
         self.encode_message.clicked.connect(callback)
 
     def get_input_message_value(self) -> str:
-        if self.input_message.toPlainText():
-            return self.input_message.toPlainText()
+        if self.input_message.text():
+            return self.input_message.text()
         else:
             raise ValueError('В поле с сообщением пусто')
 
@@ -321,7 +472,7 @@ class HemmingView(QMainWindow, Ui_MainWindow):
     def set_label_encoded(self, encoded_message: str, check_indices: str):
         start_string = '<html><body>'
         end_sting = '</body></html>'
-        open_colored_teg = '<span style="color:#32CD32;">'
+        open_colored_teg = '<span style="font-weight: 700;">'
         close_colored_teg = '</span>'
         check_indices = check_indices.split(' ')
         check_indices_for_iterations = []
@@ -349,10 +500,10 @@ class HemmingView(QMainWindow, Ui_MainWindow):
     def connect_modify_and_decod_button(self, callback):
         self.modify_and_decod_button.clicked.connect(callback)
 
-    def get_modify_and_decod_input(self) -> list[int]:
+    def get_modify_and_decod_input(self) -> list[int] | None:
         if self.modify_and_decod_input.text():
             input_sting = self.modify_and_decod_input.text()
-            input_sting = input_sting.replace(" ", '').replace(',', '').replace('.', '')
+            input_sting = input_sting.replace(',', '').replace('.', '').split(' ')
             result = []
             for item in input_sting:
                 try:
@@ -361,19 +512,49 @@ class HemmingView(QMainWindow, Ui_MainWindow):
                     continue
             return result
         else:
-            raise ValueError('В поле ввода ошибки ничено не введено')
+            return None
 
-    def set_modified_message_label(self, modified_message: str):
-        self.label_modifaed.setText(f'Модифицированный информационный блок: \n '
-                                    f'{modified_message}')
+    def set_modified_message_label(self, modified_message: str, bit_addresses_to_modify: list[int] | None):
+        if bit_addresses_to_modify is not None:
+            start_string = '<html><body>'
+            end_sting = '</body></html>'
+            open_colored_teg = '<span style="font-weight: 700;">'
+            close_colored_teg = '</span>'
+            message_with_color = ''
+            for id, item in enumerate(modified_message):
+                separator = ""
+                if id > 9:
+                    separator = " "
+                if id in bit_addresses_to_modify:
+                    message_with_color += separator + open_colored_teg + item + close_colored_teg + '|'
+                else:
+                    message_with_color += separator + item + '|'
+            self.label_modifaed.setText(f'{start_string} Модифицированный информационный блок: \n'
+                                        f'{message_with_color} {end_sting} \n'
+                                        f'\n {self._set_format_for_addresses_of_digits(modified_message)}')
+            #self.label_modifaed.setText('{0}Модифицированный информационный блок: \n {1}{2} \n {3}'.format(
+                #start_string, end_sting, message_with_color, self._set_format_for_addresses_of_digits(modified_message))
+            #)
+        else:
+            self.label_modifaed.setText(f'Модифицированный информационный блок: \n '
+                                        f'{modified_message}')
 
-    def set_label_binary_syndrome_and_error_pos(self, binary_syndrome:list[int], error_pos: int):
+    def set_label_binary_syndrome_and_error_pos(self, binary_syndrome: list[int], error_pos: int):
         self.label_binary_syndrome_and_error_pos.setText(f'Синдом и позицию ошибки: \n'
                                                          f'{binary_syndrome},  {error_pos}')
 
-    def set_label_decode(self, decode_message: str):
-        self.label_decode.setText(f'Декодированный информационный блок: \n'
+    def set_label_decode(self, message: str, decode_message: str):
+        self.label_decode.setText(f'Исходный и декодированный информационный блок:\n'
+                                  f'{message} \n'
                                   f'{decode_message}')
+
+    def _set_format_for_addresses_of_digits(self, message: str) -> str:
+        addresses_of_digits = [i for i in range(len(message))]
+        formated_addresses_of_digits_to_str_with_separating = ''
+        for item in addresses_of_digits:
+            formated_addresses_of_digits_to_str_with_separating += str(item) + '|'
+
+        return formated_addresses_of_digits_to_str_with_separating
 
 
 class HemmingController(QObject):
@@ -424,13 +605,14 @@ class HemmingController(QObject):
         self._model.set_modify_bits_in_encoded_message(bit_addresses_to_modify)
 
         modified_message = self._model.get_modified_message()
-        self._view.set_modified_message_label(modified_message)
+        self._view.set_modified_message_label(modified_message, bit_addresses_to_modify)
 
         self._model.hamming_decode()
         decoded_message = self._model.get_decoded_message()
         err_pos, binary_syndrome = self._model.get_error_pos_and_binary_syndrome()
         self._view.set_label_binary_syndrome_and_error_pos(binary_syndrome, err_pos)
-        self._view.set_label_decode(decoded_message)
+        message = self._model.get_message()
+        self._view.set_label_decode(message, decoded_message)
 
 
 def main():
