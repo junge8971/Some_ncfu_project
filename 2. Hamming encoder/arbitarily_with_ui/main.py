@@ -235,7 +235,7 @@ class Hemming:
         It generates the matrix based on the message length, number of check bits, and check bit addresses.
         The resulting matrix is stored in the generating_matrix attribute for further use within the model
         """
-        if self.user_message_len and self.number_of_check_bits and self.check_indices:
+        if self.user_message_len and self.number_of_check_bits and self.check_indices is not None:
             generating_matrix = []
             for item in self.check_indices + 1:
                 counter = 0
@@ -276,6 +276,18 @@ class Hemming:
 
             return result
 
+    def generate_message(self):
+        """
+        The purpose of this function is to generate the information part of the message as a binary array
+        if the length of the message is specified.
+        It utilizes NumPy to generate random binary values
+        and saves the generated array to the self.message attribute for future use.
+        """
+        if self.user_message_len:
+            self.message = np.random.randint(2, size=self.user_message_len)
+        else:
+            raise ValueError('Длинна информационного блока не указана')
+
     def set_value_user_message_len(self, user_message_len: int):
         """
         The purpose of this function is to receive the desired length of the information block as input,
@@ -289,6 +301,42 @@ class Hemming:
                 self.user_message_len = user_message_len
             except ValueError:
                 raise ValueError('Значение длинны сообщения переданно не правильно')
+
+    def set_message(self, input_message: str):
+        """
+        The purpose of this function is to set the message for the class instance by converting it from a string to a NumPy array.
+        It performs validation checks to ensure that the input message is not empty.
+        :param input_message: input message as a string
+        """
+        if input_message:
+            message_list = [int(i) for i in input_message]
+            self.message = np.array(message_list)
+        else:
+            raise ValueError('Передаваемое сообщение пустое')
+
+    def set_modify_bits_in_encoded_message(self, bit_addresses_to_modify: list[int] | None):
+        """
+        The function modifies specific bits in an encoded message and assigns the
+         modified message to self.modified_message
+        :param bit_addresses_to_modify: a list of integers representing the positions of the bits to be modified.
+        It can also accept None if no specific bits need to be modified.
+        """
+        if bit_addresses_to_modify is not None:
+            if bit_addresses_to_modify and self.encoded_message is not None:
+                modified_message = []
+                for id, bit in enumerate(self.encoded_message):
+                    if id in bit_addresses_to_modify:
+                        bit ^= 1
+                        modified_message.append(bit)
+                    else:
+                        modified_message.append(bit)
+
+                self.modified_message = np.array(modified_message)
+
+            else:
+                raise ValueError('Не получено закодированное сообщение для модификации')
+        else:
+            self.modified_message = self.encoded_message
 
     def get_value_user_message_len(self) -> int:
         """
@@ -314,30 +362,6 @@ class Hemming:
         else:
             self.number_of_check_bits = int(np.ceil(np.log2(self.user_message_len + 1)))
             return self.number_of_check_bits
-
-    def generate_message(self):
-        """
-        The purpose of this function is to generate the information part of the message as a binary array
-        if the length of the message is specified.
-        It utilizes NumPy to generate random binary values
-        and saves the generated array to the self.message attribute for future use.
-        """
-        if self.user_message_len:
-            self.message = np.random.randint(2, size=self.user_message_len)
-        else:
-            raise ValueError('Длинна информационного блока не указана')
-
-    def set_message(self, input_message: str):
-        """
-        The purpose of this function is to set the message for the class instance by converting it from a string to a NumPy array.
-        It performs validation checks to ensure that the input message is not empty.
-        :param input_message: input message as a string
-        """
-        if input_message:
-            message_list = [int(i) for i in input_message]
-            self.message = np.array(message_list)
-        else:
-            raise ValueError('Передаваемое сообщение пустое')
 
     def get_message(self) -> str:
         """
@@ -383,30 +407,6 @@ class Hemming:
             result_generating_matrix.append(np.array2string(item, separator='')[1:-1])
         return result_generating_matrix
 
-    def set_modify_bits_in_encoded_message(self, bit_addresses_to_modify: list[int] | None):
-        """
-        The function modifies specific bits in an encoded message and assigns the
-         modified message to self.modified_message
-        :param bit_addresses_to_modify: a list of integers representing the positions of the bits to be modified.
-        It can also accept None if no specific bits need to be modified.
-        """
-        if bit_addresses_to_modify is not None:
-            if bit_addresses_to_modify and self.encoded_message is not None:
-                modified_message = []
-                for id, bit in enumerate(self.encoded_message):
-                    if id in bit_addresses_to_modify:
-                        bit ^= 1
-                        modified_message.append(bit)
-                    else:
-                        modified_message.append(bit)
-
-                self.modified_message = np.array(modified_message)
-
-            else:
-                raise ValueError('Не получено закодированное сообщение для модификации')
-        else:
-            self.modified_message = self.encoded_message
-
     def get_modified_message(self) -> str:
         """
         The function retrieves the modified message obtained from
@@ -449,17 +449,36 @@ class HemmingView(Window):
         super().__init__()
         self.show()
 
-    def get_message_len_value(self) -> int:
+    def connect_message_len_button(self, callback: classmethod):
         """
-        The function retrieves the value from a message length input field and returns it as an integer.
-        The function does not take any arguments but is a method of an object instance.
-        :return: value from a message length input field
+        The function establishes a connection between a button clicked signal and a specified callback method.
+        :param callback: representing a class method that will be invoked when the button is clicked
         """
-        try:
-            message_len_value = int(self.message_len.text())
-            return message_len_value
-        except ValueError:
-            raise ValueError('Нужно ввести целое число')
+        self.message_len_button.clicked.connect(callback)
+
+    def connect_generate_message_button(self, callback: classmethod):
+        """
+        The purpose of this function is to establish the connection between the button's click event and a specific
+        callback function, enabling the execution of custom logic or actions when the button is clicked.
+        :param callback: representing a function that will be invoked when the button is clicked
+        """
+        self.generate_message.clicked.connect(callback)
+
+    def connect_encode_button(self, callback: classmethod):
+        """
+        The purpose of this function is to establish the connection between the button's click event and a specific
+        callback method, enabling the execution of custom logic or actions when the button is clicked to trigger the encoding process.
+        :param callback: representing a class method that will be invoked when the button is clicked
+        """
+        self.encode_message.clicked.connect(callback)
+
+    def connect_modify_and_decod_button(self, callback: classmethod):
+        """
+        The purpose of this function is to establish the connection between the button's click event and a specific
+        callback method, enabling the execution of custom logic or actions when the button is clicked to trigger the modification and decoding process.
+        :param callback: representing a class method that will be invoked when the button is clicked
+        """
+        self.modify_and_decod_button.clicked.connect(callback)
 
     def set_message_len_value_to_label(self, message_len_value: int):
         """
@@ -471,13 +490,6 @@ class HemmingView(Window):
             self.label_message_len.setText(f'Длинна сообщения: {message_len_value}')
         else:
             raise ValueError('Длинна сообщения не переданна')
-
-    def connect_message_len_button(self, callback: classmethod):
-        """
-        The function establishes a connection between a button clicked signal and a specified callback method.
-        :param callback: representing a class method that will be invoked when the button is clicked
-        """
-        self.message_len_button.clicked.connect(callback)
 
     def set_label_number_of_check_bit(self, number_of_check_bit: int):
         """
@@ -499,14 +511,6 @@ class HemmingView(Window):
             self.label_coder_type.setText(f'Тип  блочного кода Хэмминга:'
                                           f' {message_len + number_of_check_bits},{message_len}')
 
-    def connect_generate_message_button(self, callback: classmethod):
-        """
-        The purpose of this function is to establish the connection between the button's click event and a specific
-        callback function, enabling the execution of custom logic or actions when the button is clicked.
-        :param callback: representing a function that will be invoked when the button is clicked
-        """
-        self.generate_message.clicked.connect(callback)
-
     def set_input_message_value(self, message: str):
         """
         The purpose of this function is to programmatically set the value of an input widget to a input_message,
@@ -514,27 +518,6 @@ class HemmingView(Window):
         :param message: a string representing the message to be set
         """
         self.input_message.setText(message)
-
-    def connect_encode_button(self, callback: classmethod):
-        """
-        The purpose of this function is to establish the connection between the button's click event and a specific
-        callback method, enabling the execution of custom logic or actions when the button is clicked to trigger the encoding process.
-        :param callback: representing a class method that will be invoked when the button is clicked
-        """
-        self.encode_message.clicked.connect(callback)
-
-    def get_input_message_value(self) -> str:
-        """
-        The function is designed to retrieve the message text from the input widget for further processing or use in
-        other parts of the program.
-        The function does not take any arguments but is a method of an object instance.
-        :return: If the input widget contains non-empty text, the function retrieves the text from the input widget using
-        self.input_message and returns it as a string.
-        """
-        if self.input_message.text():
-            return self.input_message.text()
-        else:
-            raise ValueError('В поле с сообщением пусто')
 
     def set_label_check_indices(self, check_indices: str):
         """
@@ -592,36 +575,6 @@ class HemmingView(Window):
             matrix += item + '\n'
         self.label_matrix.setText(matrix)
 
-    def connect_modify_and_decod_button(self, callback: classmethod):
-        """
-        The purpose of this function is to establish the connection between the button's click event and a specific
-        callback method, enabling the execution of custom logic or actions when the button is clicked to trigger the modification and decoding process.
-        :param callback: representing a class method that will be invoked when the button is clicked
-        """
-        self.modify_and_decod_button.clicked.connect(callback)
-
-    def get_modify_and_decod_input(self) -> list[int] | None:
-        """
-        The purpose of this function is to retrieve the input values for the "Modify and Decode" operation,
-        convert them to integers, and return them as a list.
-        The function handles input validation by ignoring non-integer values and returns None if no input is provided.
-        The function does not take any arguments but is a method of an object instance.
-        :return: list of integers denoting places to introduce errors into the encoding of the message,
-        or returns None if the field is empty
-        """
-        if self.modify_and_decod_input.text():
-            input_sting = self.modify_and_decod_input.text()
-            input_sting = input_sting.replace(',', ' ').replace('.', ' ').split(' ')
-            result = []
-            for item in input_sting:
-                try:
-                    result.append(int(item))
-                except ValueError:
-                    continue
-            return result
-        else:
-            return None
-
     def set_modified_message_label(self, modified_message: str, bit_addresses_to_modify: list[int] | None):
         if bit_addresses_to_modify is not None:
             start_string = '<html><body>'
@@ -672,6 +625,53 @@ class HemmingView(Window):
             formated_addresses_of_digits_to_str_with_separating += str(item) + '|'
 
         return formated_addresses_of_digits_to_str_with_separating
+
+    def get_modify_and_decod_input(self) -> list[int] | None:
+        """
+        The purpose of this function is to retrieve the input values for the "Modify and Decode" operation,
+        convert them to integers, and return them as a list.
+        The function handles input validation by ignoring non-integer values and returns None if no input is provided.
+        The function does not take any arguments but is a method of an object instance.
+        :return: list of integers denoting places to introduce errors into the encoding of the message,
+        or returns None if the field is empty
+        """
+        if self.modify_and_decod_input.text():
+            input_sting = self.modify_and_decod_input.text()
+            input_sting = input_sting.replace(',', ' ').replace('.', ' ').split(' ')
+            result = []
+            for item in input_sting:
+                try:
+                    result.append(int(item))
+                except ValueError:
+                    continue
+            return result
+        else:
+            return None
+
+    def get_input_message_value(self) -> str:
+        """
+        The function is designed to retrieve the message text from the input widget for further processing or use in
+        other parts of the program.
+        The function does not take any arguments but is a method of an object instance.
+        :return: If the input widget contains non-empty text, the function retrieves the text from the input widget using
+        self.input_message and returns it as a string.
+        """
+        if self.input_message.text():
+            return self.input_message.text()
+        else:
+            raise ValueError('В поле с сообщением пусто')
+
+    def get_message_len_value(self) -> int:
+        """
+        The function retrieves the value from a message length input field and returns it as an integer.
+        The function does not take any arguments but is a method of an object instance.
+        :return: value from a message length input field
+        """
+        try:
+            message_len_value = int(self.message_len.text())
+            return message_len_value
+        except ValueError:
+            raise ValueError('Нужно ввести целое число')
 
 
 class HemmingController(QObject):
