@@ -49,7 +49,7 @@ class Window(QWidget):
         self.encode_message.setObjectName(u"encode_message")
         self.gridLayout.addWidget(self.encode_message, 4, 1, 1, 1)
 
-        self.label_2 = QLabel('Введите в поле или сгенерируйте информационные биты с заданной по варианту длинной и нажмите кнопку закодировать')
+        self.label_2 = QLabel('Введите в поле или сгенерируйте информационные биты с заданной по варианту длинной и нажмите кнопку "Закодировать"')
         self.label_2.setObjectName(u"label_2")
         font1 = QFont()
         font1.setPointSize(11)
@@ -129,7 +129,7 @@ class Window(QWidget):
         self.label_coder_type.setWordWrap(True)
         self.gridLayout.addWidget(self.label_coder_type, 7, 0, 1, 1)
 
-        self.label_7 = QLabel('Внесите адрес или адреса разрадов для внесения ошибки, либо отсавьте поле пустым и нажмите на кнопку "Декодировать"')
+        self.label_7 = QLabel('Внесите адрес или адреса разрядов для внесения ошибки, либо оставьте поле пустым и нажмите на кнопку "Декодировать"')
         self.label_7.setObjectName(u"label_7")
         self.label_7.setFont(font1)
         self.label_7.setAlignment(Qt.AlignCenter)
@@ -179,8 +179,6 @@ class Hemming:
         creates a generating matrix, calculates the check bit values, inserts the check bits into the encoded message,
         and stores the encoded message for further use.
         """
-        # Calculate number of check bits based on message length
-        self.number_of_check_bits = int(np.ceil(np.log2(self.user_message_len)))
         # Find powers of two in message length -1 to get coordinates of check bits
         self.check_indices = np.array([2 ** i - 1 for i in range(self.number_of_check_bits)])
 
@@ -338,17 +336,14 @@ class Hemming:
         else:
             self.modified_message = self.encoded_message
 
-    def get_value_user_message_len(self) -> int:
+    def get_value_user_message_len(self) -> int | None:
         """
         The purpose of this function is to retrieve the value of the information block length
         stored in the user_message_len attribute within the class.
         It ensures that the length value is defined and returns it as an integer.
         :return: value of user_message_len, which represents the length of the information block.
         """
-        if self.user_message_len:
-            return self.user_message_len
-        else:
-            raise ValueError('Длинна сообщения не определенна')
+        return self.user_message_len
 
     def get_number_of_check_bits(self) -> int:
         """
@@ -357,11 +352,8 @@ class Hemming:
         Otherwise, it calculates the number of check bits using the formula and returns the calculated value.
         :return: the amount of check bits
         """
-        if self.number_of_check_bits:
-            return self.number_of_check_bits
-        else:
-            self.number_of_check_bits = int(np.ceil(np.log2(self.user_message_len + 1)))
-            return self.number_of_check_bits
+        self.number_of_check_bits = int(np.ceil(np.log2(self.user_message_len + 1)))
+        return self.number_of_check_bits
 
     def get_message(self) -> str:
         """
@@ -438,7 +430,7 @@ class Hemming:
         :return:The returned list provides information about the error position and the binary syndrome associated with
         the decoding process.
         """
-        if self.error_pos and self.binary_syndrome:
+        if self.error_pos is not None and self.binary_syndrome:
             return [self.error_pos, self.binary_syndrome]
         else:
             raise ValueError('Позиция ошибки и синдром не определены')
@@ -487,9 +479,9 @@ class HemmingView(Window):
         :return: The function is designed to update the label widget with the message length value to display it to the user.
         """
         if message_len_value:
-            self.label_message_len.setText(f'Длинна сообщения: {message_len_value}')
+            self.label_message_len.setText(f'Длинна информационного блока: {message_len_value}')
         else:
-            raise ValueError('Длинна сообщения не переданна')
+            raise ValueError('Длинна информационного блока не переданна')
 
     def set_label_number_of_check_bit(self, number_of_check_bit: int):
         """
@@ -508,7 +500,7 @@ class HemmingView(Window):
         :param number_of_check_bits: an integer representing the count of check bits
         """
         if message_len and number_of_check_bits:
-            self.label_coder_type.setText(f'Тип  блочного кода Хэмминга:'
+            self.label_coder_type.setText(f'Тип  блочного кода:'
                                           f' {message_len + number_of_check_bits},{message_len}')
 
     def set_input_message_value(self, message: str):
@@ -583,16 +575,12 @@ class HemmingView(Window):
             close_colored_teg = '</span>'
             message_with_color = ''
             for id, item in enumerate(modified_message):
-                separator = ""
-                if id > 9:
-                    separator = " "
                 if id in bit_addresses_to_modify:
-                    message_with_color += separator + open_colored_teg + item + close_colored_teg + '|'
+                    message_with_color += open_colored_teg + item + close_colored_teg
                 else:
-                    message_with_color += separator + item + '|'
+                    message_with_color += item
             self.label_modifaed.setText(f'{start_string} Модифицированный информационный блок: <br>'
-                                        f'{message_with_color} {end_sting} \n'
-                                        f'\n {self._set_format_for_addresses_of_digits(modified_message)}')
+                                        f'{message_with_color} {end_sting} \n')
         else:
             self.label_modifaed.setText(f'Модифицированный информационный блок: \n '
                                         f'{modified_message}')
@@ -721,18 +709,24 @@ class HemmingController(QObject):
         message_for_encode = self._view.get_input_message_value()
         message_len_that_was_user_input = self._model.get_value_user_message_len()
         if len(message_for_encode) != message_len_that_was_user_input:
-            raise ValueError("Введённая длина сообщения и длинна введённого сообщения не равны")
-        else:
-            self._model.set_message(message_for_encode)
-            self._model.hamming_encode()
-            check_indices = self._model.get_check_indices()
-            self._view.set_label_check_indices(check_indices)
-            message_for_view = self._model.get_message()
-            self._view.set_label_input_data(message_for_view)
-            encoded_message = self._model.get_encoded_message()
-            self._view.set_label_encoded(encoded_message, check_indices)
-            get_generating_matrix = self._model.get_generating_matrix()
-            self._view.set_label_matrix(get_generating_matrix)
+            self._view.set_message_len_value_to_label(len(message_for_encode))
+            self._model.set_value_user_message_len(len(message_for_encode))
+
+            number_of_check_bits = self._model.get_number_of_check_bits()
+            self._view.set_label_number_of_check_bit(number_of_check_bits)
+
+            self._view.set_label_coder_type(len(message_for_encode), number_of_check_bits)
+
+        self._model.set_message(message_for_encode)
+        self._model.hamming_encode()
+        check_indices = self._model.get_check_indices()
+        self._view.set_label_check_indices(check_indices)
+        message_for_view = self._model.get_message()
+        self._view.set_label_input_data(message_for_view)
+        encoded_message = self._model.get_encoded_message()
+        self._view.set_label_encoded(encoded_message, check_indices)
+        get_generating_matrix = self._model.get_generating_matrix()
+        self._view.set_label_matrix(get_generating_matrix)
 
     def handle_modify_and_decod_button_click(self):
         """
