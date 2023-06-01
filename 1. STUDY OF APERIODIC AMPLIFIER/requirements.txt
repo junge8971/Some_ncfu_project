@@ -1,0 +1,5 @@
+Python==3.10.8 
+matplotlib==3.6.2
+numpy==1.23.5
+PySide2==5.15.2.1
+si-prefix==1.2.2
